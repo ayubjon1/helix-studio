@@ -7,6 +7,7 @@ Helix Studio — Native Desktop App
 import static_ffmpeg
 static_ffmpeg.add_paths()
 
+import os
 import threading
 import time
 import sys
@@ -60,6 +61,10 @@ if __name__ == "__main__":
 
     print("Готово!")
 
+    # Resolve icon path
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(app_dir, "static", "icon.png")
+
     # Open native window
     window = webview.create_window(
         title="Helix Studio",
@@ -72,8 +77,19 @@ if __name__ == "__main__":
     )
 
     def on_loaded():
-        """Remove on_top after load so clicks work properly."""
-        time.sleep(0.5)
+        """Set dock icon and remove on_top after load."""
+        # Set macOS dock icon
+        if platform.system() == "Darwin":
+            try:
+                from AppKit import NSApplication, NSImage
+                if os.path.exists(icon_path):
+                    ns_app = NSApplication.sharedApplication()
+                    img = NSImage.alloc().initWithContentsOfFile_(icon_path)
+                    if img:
+                        ns_app.setApplicationIconImage_(img)
+            except Exception:
+                pass
+        time.sleep(0.3)
         window.on_top = False
 
     window.events.loaded += on_loaded
