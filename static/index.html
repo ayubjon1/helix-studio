@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniVoice Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙</text></svg>">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="toast-container" id="toast-container"></div>
+
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M12 20 Q16 10, 20 20 Q24 30, 28 20" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-title">OmniVoice</span>
+                <span class="logo-sub">Studio</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="header-btn" id="shortcuts-toggle" aria-label="Горячие клавиши" title="Горячие клавиши">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18">
+                    <rect x="2" y="6" width="20" height="12" rx="2"/>
+                    <path d="M6 10h0M10 10h0M14 10h0M18 10h0M8 14h8"/>
+                </svg>
+            </button>
+            <div class="header-status">
+                <div class="status-dot"></div>
+                <span class="status-text">Model Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shortcuts overlay -->
+    <div class="shortcuts-overlay hidden" id="shortcuts-overlay">
+        <div class="shortcuts-panel">
+            <div class="shortcuts-header">
+                <h3>Горячие клавиши</h3>
+                <button class="shortcuts-close" id="shortcuts-close" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="shortcuts-list">
+                <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span>Генерировать</span></div>
+                <div class="shortcut-item"><kbd>Space</kbd><span>Играть / Пауза</span></div>
+                <div class="shortcut-item"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Режимы</span></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="studio-grid">
+            <!-- Left Panel: Controls -->
+            <section class="panel panel-controls">
+                <div class="panel-header">
+                    <h2 class="panel-title">Синтез</h2>
+                    <div class="panel-indicator"></div>
+                </div>
+
+                <!-- Mode Selector -->
+                <div class="mode-selector" role="tablist" aria-label="Режим синтеза">
+                    <button class="mode-btn active" data-mode="basic" role="tab" aria-selected="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"/></svg>
+                        <span>Текст → Речь</span>
+                    </button>
+                    <button class="mode-btn" data-mode="clone" role="tab" aria-selected="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
+                        <span>Клонирование</span>
+                    </button>
+                    <button class="mode-btn" data-mode="design" role="tab" aria-selected="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3c-1.5 0-3 .5-4 2s-1 4 0 6c.5 1 1.5 2 2 3s.5 3 0 4M16 8c1 1 1.5 3 1 5s-2 3-3 4"/><circle cx="8" cy="5" r="1" fill="currentColor"/></svg>
+                        <span>Дизайн голоса</span>
+                    </button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="input-group">
+                    <label class="input-label" for="text-input">Текст для синтеза</label>
+                    <textarea id="text-input" class="text-area" rows="5" maxlength="5000" placeholder="Введите текст, который нужно озвучить..."></textarea>
+                    <div class="text-toolbar">
+                        <div class="token-buttons" title="Невербальные вставки">
+                            <button class="token-btn" data-token="[laughter]" title="Смех">😂</button>
+                            <button class="token-btn" data-token="[sigh]" title="Вздох">😮‍💨</button>
+                            <button class="token-btn" data-token="[surprise-ah]" title="Удивление">😲</button>
+                            <button class="token-btn" data-token="[question-en]" title="Вопрос">🤔</button>
+                            <button class="token-btn" data-token="[confirmation-en]" title="Подтверждение">👍</button>
+                            <button class="token-btn" data-token="[dissatisfaction-hnn]" title="Недовольство">😤</button>
+                        </div>
+                        <div class="char-count"><span id="char-count">0</span> / 5000</div>
+                    </div>
+                </div>
+
+                <!-- Clone Mode -->
+                <div id="clone-section" class="mode-section hidden" role="tabpanel">
+                    <!-- Saved Voice Presets -->
+                    <div class="input-group">
+                        <label class="input-label">Голосовые пресеты</label>
+                        <div class="presets-list" id="voice-presets-list">
+                            <div class="preset-empty">Нет сохранённых голосов</div>
+                        </div>
+                        <input type="hidden" id="selected-preset-id" value="">
+                    </div>
+
+                    <!-- Or upload new -->
+                    <div class="input-group">
+                        <label class="input-label">Или загрузите новый голос</label>
+                        <div class="file-drop" id="file-drop">
+                            <input type="file" id="ref-audio-input" accept="audio/*" hidden>
+                            <div class="file-drop-content">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" class="file-drop-icon" aria-hidden="true"><path d="M24 32V16M18 22l6-6 6 6"/><rect x="8" y="8" width="32" height="32" rx="4"/></svg>
+                                <p>Перетащите аудио или <span class="file-drop-link">выберите файл</span></p>
+                                <p class="file-drop-hint">WAV, MP3, FLAC — 3-30 сек</p>
+                            </div>
+                            <div class="file-drop-loaded hidden" id="file-loaded">
+                                <div class="file-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                    <span id="file-name">audio.wav</span>
+                                    <button class="file-remove" id="file-remove" aria-label="Удалить файл">&times;</button>
+                                </div>
+                                <!-- Audio Trimmer with waveform -->
+                                <div class="trimmer" id="trimmer">
+                                    <div class="trimmer-waveform">
+                                        <canvas id="trimmer-canvas" width="500" height="60"></canvas>
+                                        <div class="trimmer-selection" id="trimmer-selection">
+                                            <div class="trimmer-handle trimmer-handle-left" id="trimmer-left" title="Начало"></div>
+                                            <div class="trimmer-handle trimmer-handle-right" id="trimmer-right" title="Конец"></div>
+                                        </div>
+                                    </div>
+                                    <div class="trimmer-controls">
+                                        <button class="trimmer-play-btn" id="trimmer-play" aria-label="Прослушать фрагмент">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" width="14"><polygon points="5,3 19,12 5,21"/></svg>
+                                        </button>
+                                        <span class="trimmer-time" id="trimmer-time">0.0s — 0.0s</span>
+                                        <span class="trimmer-duration" id="trimmer-duration">= 0.0s</span>
+                                        <button class="trimmer-reset-btn" id="trimmer-reset" title="Сбросить обрезку">Сбросить</button>
+                                    </div>
+                                </div>
+                                <div class="save-preset-row">
+                                    <input type="text" id="preset-name-input" class="preset-name-input" placeholder="Имя пресета...">
+                                    <button class="btn-save-preset" id="btn-save-preset" title="Сохранить как пресет">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                        <span>Сохранить голос</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" for="ref-text">Транскрипция <span class="label-hint">(необязательно — авто через Whisper)</span></label>
+                        <div class="transcribe-row">
+                            <textarea id="ref-text" class="text-area small" rows="2" placeholder="Текст, произнесённый в аудио..."></textarea>
+                            <button class="btn-transcribe" id="btn-transcribe" title="Автоматическая транскрипция" aria-label="Транскрибировать">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Mode -->
+                <div id="design-section" class="mode-section hidden" role="tabpanel">
+                    <div class="input-group">
+                        <label class="input-label" for="instruct-input">Описание голоса</label>
+                        <textarea id="instruct-input" class="text-area" rows="2" placeholder="female, young adult, british accent, low pitch..."></textarea>
+                        <div class="design-tags">
+                            <div class="tag-group">
+                                <span class="tag-group-label">Пол:</span>
+                                <button class="preset-chip" data-tag="male"><span lang="en">male</span></button>
+                                <button class="preset-chip" data-tag="female"><span lang="en">female</span></button>
+                            </div>
+                            <div class="tag-group">
+                                <span class="tag-group-label">Возраст:</span>
+                                <button class="preset-chip" data-tag="child"><span lang="en">child</span></button>
+                                <button class="preset-chip" data-tag="teenager"><span lang="en">teenager</span></button>
+                                <button class="preset-chip" data-tag="young adult"><span lang="en">young adult</span></button>
+                                <button class="preset-chip" data-tag="middle-aged"><span lang="en">middle-aged</span></button>
+                                <button class="preset-chip" data-tag="elderly"><span lang="en">elderly</span></button>
+                            </div>
+                            <div class="tag-group">
+                                <span class="tag-group-label">Тон:</span>
+                                <button class="preset-chip" data-tag="very low pitch"><span lang="en">very low</span></button>
+                                <button class="preset-chip" data-tag="low pitch"><span lang="en">low</span></button>
+                                <button class="preset-chip" data-tag="moderate pitch"><span lang="en">moderate</span></button>
+                                <button class="preset-chip" data-tag="high pitch"><span lang="en">high</span></button>
+                                <button class="preset-chip" data-tag="very high pitch"><span lang="en">very high</span></button>
+                            </div>
+                            <div class="tag-group">
+                                <span class="tag-group-label">Акцент:</span>
+                                <button class="preset-chip" data-tag="american accent"><span lang="en">american</span></button>
+                                <button class="preset-chip" data-tag="british accent"><span lang="en">british</span></button>
+                                <button class="preset-chip" data-tag="australian accent"><span lang="en">australian</span></button>
+                                <button class="preset-chip" data-tag="indian accent"><span lang="en">indian</span></button>
+                                <button class="preset-chip" data-tag="russian accent"><span lang="en">russian</span></button>
+                                <button class="preset-chip" data-tag="chinese accent"><span lang="en">chinese</span></button>
+                                <button class="preset-chip" data-tag="japanese accent"><span lang="en">japanese</span></button>
+                                <button class="preset-chip" data-tag="korean accent"><span lang="en">korean</span></button>
+                            </div>
+                            <div class="tag-group">
+                                <span class="tag-group-label" lang="zh">中文方言:</span>
+                                <button class="preset-chip" data-tag="东北话">东北话</button>
+                                <button class="preset-chip" data-tag="四川话">四川话</button>
+                                <button class="preset-chip" data-tag="河南话">河南话</button>
+                                <button class="preset-chip" data-tag="陕西话">陕西话</button>
+                                <button class="preset-chip" data-tag="云南话">云南话</button>
+                                <button class="preset-chip" data-tag="济南话">济南话</button>
+                            </div>
+                            <div class="tag-group">
+                                <span class="tag-group-label">Стиль:</span>
+                                <button class="preset-chip" data-tag="whisper"><span lang="en">whisper</span></button>
+                            </div>
+                        </div>
+                        <div class="design-presets">
+                            <span class="tag-group-label">Готовые:</span>
+                            <button class="preset-chip preset-full" data-preset="female, young adult, high pitch, british accent">Молодая британка</button>
+                            <button class="preset-chip preset-full" data-preset="male, middle-aged, low pitch, american accent">Мужчина баритон</button>
+                            <button class="preset-chip preset-full" data-preset="female, child, very high pitch">Ребёнок</button>
+                            <button class="preset-chip preset-full" data-preset="male, elderly, very low pitch, russian accent">Пожилой с акцентом</button>
+                            <button class="preset-chip preset-full" data-preset="female, young adult, whisper">Шёпот</button>
+                            <button class="preset-chip preset-full" data-preset="男，中年，低音调，东北话">Мужчина 东北话</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="params-section">
+                    <div class="params-header" id="params-toggle">
+                        <span>Параметры генерации</span>
+                        <svg class="params-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                    <div class="params-body" id="params-body">
+                        <div class="param-row">
+                            <label class="param-label">Язык <span class="param-value" id="lang-display">Авто</span></label>
+                            <div class="lang-picker" id="lang-picker">
+                                <button class="lang-picker-btn" id="lang-picker-btn" type="button">
+                                    <span class="lang-picker-flag" id="lang-picker-flag">🌐</span>
+                                    <span class="lang-picker-text" id="lang-picker-text">Авто-определение</span>
+                                    <svg class="lang-picker-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><path d="M6 9l6 6 6-6"/></svg>
+                                </button>
+                                <div class="lang-dropdown hidden" id="lang-dropdown">
+                                    <div class="lang-search-wrap">
+                                        <input type="text" class="lang-search" id="lang-search" placeholder="Поиск языка..." autocomplete="off">
+                                    </div>
+                                    <div class="lang-list" id="lang-list"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="language-select" value="">
+                        </div>
+                        <div class="param-row">
+                            <label class="param-label" for="speed-slider">Скорость <span class="param-value" id="speed-display">1.0×</span></label>
+                            <input type="range" id="speed-slider" class="param-slider" min="0.5" max="2.0" step="0.1" value="1.0">
+                        </div>
+                        <div class="param-row">
+                            <label class="param-label" for="steps-slider">Шаги диффузии <span class="param-value" id="steps-display">32</span></label>
+                            <input type="range" id="steps-slider" class="param-slider" min="8" max="64" step="4" value="32">
+                            <div class="param-hint">16 = быстро, 32 = баланс, 64 = макс. качество</div>
+                        </div>
+                        <div class="param-row">
+                            <label class="param-label" for="duration-input">Длительность (сек) <span class="param-value" id="duration-display">Авто</span></label>
+                            <input type="number" id="duration-input" class="param-number" min="0" max="60" step="0.5" value="0" placeholder="0 = авто">
+                            <div class="param-hint">0 = определяется автоматически по тексту</div>
+                        </div>
+
+                        <!-- Advanced toggle -->
+                        <div class="advanced-toggle" id="advanced-toggle">
+                            <span>Расширенные параметры</span>
+                            <svg class="params-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <div class="advanced-params hidden" id="advanced-params">
+                            <div class="param-row">
+                                <label class="param-label" for="guidance-slider">Guidance Scale <span class="param-value" id="guidance-display">2.0</span></label>
+                                <input type="range" id="guidance-slider" class="param-slider" min="1.0" max="5.0" step="0.1" value="2.0">
+                                <div class="param-hint">Усиливает следование инструкциям (1=слабо, 5=строго)</div>
+                            </div>
+                            <div class="param-row">
+                                <label class="param-label" for="class-temp-slider">Class Temperature <span class="param-value" id="class-temp-display">0.0</span></label>
+                                <input type="range" id="class-temp-slider" class="param-slider" min="0.0" max="2.0" step="0.1" value="0.0">
+                                <div class="param-hint">0 = детерминированный, >0 = случайная вариативность</div>
+                            </div>
+                            <div class="param-row">
+                                <label class="param-label" for="pos-temp-slider">Position Temperature <span class="param-value" id="pos-temp-display">5.0</span></label>
+                                <input type="range" id="pos-temp-slider" class="param-slider" min="0.0" max="10.0" step="0.5" value="5.0">
+                            </div>
+                            <div class="param-row param-row-inline">
+                                <label class="param-check-label"><input type="checkbox" id="denoise-check" checked> Denoise</label>
+                                <label class="param-check-label"><input type="checkbox" id="preprocess-check" checked> Preprocess</label>
+                                <label class="param-check-label"><input type="checkbox" id="postprocess-check" checked> Postprocess</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button class="btn-generate" id="btn-generate">
+                    <div class="btn-generate-content">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+                        <span>Генерировать</span>
+                        <kbd class="btn-shortcut">Ctrl+Enter</kbd>
+                    </div>
+                    <div class="btn-generate-loading hidden">
+                        <div class="loading-wave"><span></span><span></span><span></span><span></span><span></span></div>
+                        <span>Генерация...</span>
+                    </div>
+                </button>
+            </section>
+
+            <!-- Right Panel: Output & History -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">Результат</h2>
+                    <div class="panel-indicator"></div>
+                </div>
+
+                <div class="output-area" id="output-area">
+                    <div class="output-empty" id="output-empty">
+                        <div class="output-empty-vis">
+                            <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+                            <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+                            <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+                            <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+                        </div>
+                        <p>Введите текст и нажмите «Генерировать»</p>
+                        <p class="output-empty-hint">или <kbd>Ctrl</kbd>+<kbd>Enter</kbd></p>
+                    </div>
+
+                    <div class="output-error hidden" id="output-error">
+                        <div class="error-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                        </div>
+                        <p class="error-message" id="error-message">Произошла ошибка</p>
+                        <button class="error-retry" id="error-retry">Попробовать снова</button>
+                    </div>
+
+                    <div class="output-player hidden" id="output-player">
+                        <div class="player-waveform" aria-label="Waveform">
+                            <canvas id="waveform-canvas" width="600" height="80"></canvas>
+                        </div>
+                        <div class="player-controls">
+                            <button class="player-btn" id="player-play" aria-label="Играть / Пауза">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="28" id="play-icon"><polygon points="5,3 19,12 5,21"/></svg>
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="28" id="pause-icon" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                            </button>
+                            <div class="player-time">
+                                <span id="player-current">0:00</span>
+                                <span class="player-sep">/</span>
+                                <span id="player-duration">0:00</span>
+                            </div>
+                            <button class="speed-btn" id="playback-speed" aria-label="Скорость воспроизведения">1×</button>
+                            <div class="player-meta"><span class="meta-badge" id="meta-elapsed"></span></div>
+                            <a class="player-download" id="player-download" download aria-label="Скачать">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <div class="history-header">
+                        <h3 class="history-title">История <span class="history-count" id="history-count"></span></h3>
+                        <button class="history-clear" id="history-clear" aria-label="Очистить историю">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <div class="history-empty">Пока пусто</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="/lang_data.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+uploads/
+generated/
+voice_presets/*.pt
+voice_presets/*.wav
+history.json
+output.wav
+.claude/
+*.dmg
+OmniVoice Studio.app/
+.omnivoice.log
+test_tts.py
