@@ -899,9 +899,9 @@ async function generate() {
     fd.append("guidance_scale", $("#guidance-slider").value);
     fd.append("class_temperature", $("#class-temp-slider").value);
     fd.append("position_temperature", $("#pos-temp-slider").value);
-    fd.append("denoise", $("#denoise-check").checked);
-    fd.append("preprocess_prompt", $("#preprocess-check").checked);
-    fd.append("postprocess_output", $("#postprocess-check").checked);
+    fd.append("denoise", $("#denoise-check").checked ? "true" : "false");
+    fd.append("preprocess_prompt", $("#preprocess-check").checked ? "true" : "false");
+    fd.append("postprocess_output", $("#postprocess-check").checked ? "true" : "false");
 
     if (currentMode === "clone") {
         const presetId = $("#selected-preset-id").value;

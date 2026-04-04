@@ -91,7 +91,7 @@ async def lifespan(app: FastAPI):
         pt_path = PRESETS_DIR / f"{preset['id']}.pt"
         if pt_path.exists():
             try:
-                voice_prompts_cache[preset["id"]] = torch.load(str(pt_path), weights_only=False)
+                voice_prompts_cache[preset["id"]] = torch.load(str(pt_path), weights_only=False, map_location=model.device)
             except Exception:
                 pass
     print(f"Loaded {len(voice_prompts_cache)} voice presets")
@@ -131,7 +131,7 @@ def _validate_audio_ext(filename: str) -> str:
 # ─── Routes ───
 @app.get("/api/languages")
 async def get_languages():
-    all_ids = sorted(OmniVoice.supported_language_ids(model))
+    all_ids = sorted(model.supported_language_ids())
     return {"popular": POPULAR_LANGUAGES, "all_ids": all_ids}
 
 
@@ -145,9 +145,9 @@ async def generate_speech(
     guidance_scale: float = Form(2.0),
     class_temperature: float = Form(0.0),
     position_temperature: float = Form(5.0),
-    denoise: bool = Form(True),
-    preprocess_prompt: bool = Form(True),
-    postprocess_output: bool = Form(True),
+    denoise: str = Form("true"),
+    preprocess_prompt: str = Form("true"),
+    postprocess_output: str = Form("true"),
     duration: float = Form(0),
     instruct: str = Form(""),
     ref_text: str = Form(""),
@@ -169,14 +169,18 @@ async def generate_speech(
     if mode not in ("basic", "clone", "design"):
         raise HTTPException(400, "Неизвестный режим")
 
+    # Parse boolean strings from form
+    def parse_bool(val: str) -> bool:
+        return val.lower() in ("true", "1", "yes", "on")
+
     gen_config = OmniVoiceGenerationConfig(
         num_step=num_step,
         guidance_scale=guidance_scale,
         class_temperature=class_temperature,
         position_temperature=position_temperature,
-        denoise=denoise,
-        preprocess_prompt=preprocess_prompt,
-        postprocess_output=postprocess_output,
+        denoise=parse_bool(denoise),
+        preprocess_prompt=parse_bool(preprocess_prompt),
+        postprocess_output=parse_bool(postprocess_output),
     )
 
     kwargs = {
@@ -207,6 +211,8 @@ async def generate_speech(
             kwargs["ref_audio"] = str(ref_path)
             if ref_text.strip():
                 kwargs["ref_text"] = ref_text.strip()
+        else:
+            raise HTTPException(400, "Загрузите аудио или выберите голосовой пресет")
     elif mode == "design" and instruct.strip():
         kwargs["instruct"] = instruct.strip()
 
