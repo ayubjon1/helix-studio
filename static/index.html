@@ -377,5 +377,10 @@
     </main>
     <script src="/lang_data.js"></script>
     <script src="/app.js"></script>
+    <script>
+    // Fix pywebview macOS focus issue
+    window.addEventListener('load', () => { window.focus(); document.body.focus(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) window.focus(); });
+    </script>
 </body>
 </html>

@@ -61,12 +61,20 @@ if __name__ == "__main__":
     print("Готово!")
 
     # Open native window
-    webview.create_window(
+    window = webview.create_window(
         title="Helix Studio",
         url=f"http://{HOST}:{PORT}",
         width=1300,
         height=850,
         min_size=(900, 600),
         text_select=True,
+        on_top=True,
     )
-    webview.start()
+
+    def on_loaded():
+        """Remove on_top after load so clicks work properly."""
+        time.sleep(0.5)
+        window.on_top = False
+
+    window.events.loaded += on_loaded
+    webview.start(private_mode=False)
