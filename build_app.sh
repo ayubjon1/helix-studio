@@ -146,9 +146,9 @@ LAUNCHER
 
 chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
 
-# Copy icon if exists
-if [ -f "$SRC_DIR/Helix Studio.app/Contents/Resources/icon.icns" ]; then
-    cp "$SRC_DIR/Helix Studio.app/Contents/Resources/icon.icns" "$APP_BUNDLE/Contents/Resources/icon.icns"
+# Copy icon
+if [ -f "$SRC_DIR/static/icon.icns" ]; then
+    cp "$SRC_DIR/static/icon.icns" "$APP_BUNDLE/Contents/Resources/icon.icns"
 fi
 
 # ─── 2. Prepare Data folder ───
