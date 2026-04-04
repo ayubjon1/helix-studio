@@ -121,10 +121,7 @@ fi
 # ─── Launch native app ───
 osascript -e 'display notification "Запуск... ~30 сек" with title "Helix Studio"' 2>/dev/null
 
-# Create symlink so Dock shows "Helix Studio" instead of "python3.12"
-ln -sf .venv/bin/python "Helix Studio" 2>/dev/null
-
-./Helix\ Studio app.py > "$LOG_FILE" 2>&1
+.venv/bin/python app.py > "$LOG_FILE" 2>&1
 pkill -f "uvicorn server:app" 2>/dev/null
 LAUNCHER
 

@@ -7,6 +7,26 @@ Helix Studio — Native Desktop App
 import multiprocessing
 multiprocessing.set_start_method("spawn", force=True)
 
+# Set process name BEFORE any other imports
+import platform
+if platform.system() == "Darwin":
+    try:
+        import ctypes, ctypes.util
+        libc = ctypes.cdll.LoadLibrary(ctypes.util.find_library("c"))
+        libc.setprogname(b"Helix Studio")
+        # Override NSProcessInfo
+        from Foundation import NSBundle
+        info = NSBundle.mainBundle().infoDictionary()
+        if info:
+            info["CFBundleName"] = "Helix Studio"
+        from AppKit import NSProcessInfo
+        NSProcessInfo.processInfo().setValue_forKey_("Helix Studio", "processName")
+        # Override argv[0]
+        import sys
+        sys.argv[0] = "Helix Studio"
+    except Exception:
+        pass
+
 import static_ffmpeg
 static_ffmpeg.add_paths()
 
@@ -14,21 +34,7 @@ import os
 import threading
 import time
 import sys
-import platform
-import ctypes
 import uvicorn
-
-# Set process name to "Helix Studio" instead of "python3.12"
-try:
-    if platform.system() == "Darwin":
-        libc = ctypes.cdll.LoadLibrary("libc.dylib")
-        # setprogname
-        libc.setprogname(b"Helix Studio")
-        # Also set argv[0]
-        from AppKit import NSProcessInfo
-        NSProcessInfo.processInfo().setValue_forKey_("Helix Studio", "processName")
-except Exception:
-    pass
 
 from server import app as fastapi_app
 
