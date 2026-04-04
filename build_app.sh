@@ -119,7 +119,7 @@ if ! .venv/bin/python -c "import omnivoice" 2>/dev/null; then
 fi
 
 # ─── Launch native app ───
-osascript -e 'display notification "Загрузка AI-модели (~30 сек)..." with title "Helix Studio"' 2>/dev/null
+osascript -e 'display notification "Запуск... ~30 сек" with title "Helix Studio"' 2>/dev/null
 
 .venv/bin/python app.py > "$LOG_FILE" 2>&1
 pkill -f "uvicorn server:app" 2>/dev/null
