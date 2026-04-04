@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════
-#  OmniVoice Studio — Установщик
+#  Helix Studio — Установщик
 #  Создаёт полноценное приложение для Mac / Linux
 # ═══════════════════════════════════════════════════
 set -e
@@ -11,7 +11,7 @@ PORT=8001
 
 echo ""
 echo "  ╔══════════════════════════════════╗"
-echo "  ║  🎙 OmniVoice Studio Installer   ║"
+echo "  ║  🎙 Helix Studio Installer   ║"
 echo "  ╚══════════════════════════════════╝"
 echo ""
 
@@ -45,7 +45,7 @@ echo "[4/5] Подготовка ffmpeg..."
 if [[ "$(uname)" == "Darwin" ]]; then
     echo "[5/5] Создание приложения для macOS..."
 
-    APP_NAME="OmniVoice Studio"
+    APP_NAME="Helix Studio"
     APP_BUNDLE="$APP_DIR/$APP_NAME.app"
 
     # Clean previous
@@ -62,11 +62,11 @@ if [[ "$(uname)" == "Darwin" ]]; then
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>OmniVoice Studio</string>
+    <string>Helix Studio</string>
     <key>CFBundleDisplayName</key>
-    <string>OmniVoice Studio</string>
+    <string>Helix Studio</string>
     <key>CFBundleIdentifier</key>
-    <string>com.omnivoice.studio</string>
+    <string>com.helix.studio</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleExecutable</key>
@@ -101,19 +101,19 @@ nohup .venv/bin/python -m uvicorn server:app --host 127.0.0.1 --port \$PORT > "\
 SERVER_PID=\$!
 
 # Wait for server to be ready (model loading takes time)
-osascript -e 'display notification "Загрузка модели... Это займёт 15-30 секунд" with title "OmniVoice Studio" subtitle "Запуск"'
+osascript -e 'display notification "Загрузка модели... Это займёт 15-30 секунд" with title "Helix Studio" subtitle "Запуск"'
 
 for i in \$(seq 1 120); do
     if curl -s "http://localhost:\$PORT/api/languages" > /dev/null 2>&1; then
         open "http://localhost:\$PORT"
-        osascript -e 'display notification "Сервер готов!" with title "OmniVoice Studio" subtitle "http://localhost:'\$PORT'"'
+        osascript -e 'display notification "Сервер готов!" with title "Helix Studio" subtitle "http://localhost:'\$PORT'"'
         exit 0
     fi
     sleep 1
 done
 
 # If we got here, server failed to start
-osascript -e 'display dialog "Не удалось запустить сервер. Проверьте лог:\n'\$LOG_FILE'" with title "OmniVoice Studio" buttons {"OK"} default button "OK" with icon stop'
+osascript -e 'display dialog "Не удалось запустить сервер. Проверьте лог:\n'\$LOG_FILE'" with title "Helix Studio" buttons {"OK"} default button "OK" with icon stop'
 kill \$SERVER_PID 2>/dev/null
 LAUNCHER
 
@@ -204,7 +204,7 @@ ICONSCRIPT
     # Create stop script
     cat > "$APP_DIR/stop.sh" << 'STOPSCRIPT'
 #!/bin/bash
-pkill -f "uvicorn server:app" 2>/dev/null && echo "OmniVoice Studio остановлен" || echo "Сервер не запущен"
+pkill -f "uvicorn server:app" 2>/dev/null && echo "Helix Studio остановлен" || echo "Сервер не запущен"
 STOPSCRIPT
     chmod +x "$APP_DIR/stop.sh"
 
@@ -213,7 +213,7 @@ STOPSCRIPT
     echo ""
     echo "  📱 Приложение: $APP_BUNDLE"
     echo ""
-    echo "  → Дважды кликните по «OmniVoice Studio» чтобы запустить"
+    echo "  → Дважды кликните по «Helix Studio» чтобы запустить"
     echo "  → Или перетащите его в /Applications"
     echo ""
 
@@ -226,7 +226,7 @@ STOPSCRIPT
     fi
 
     echo ""
-    echo "  🎙 Запустить сейчас? Откройте «OmniVoice Studio»"
+    echo "  🎙 Запустить сейчас? Откройте «Helix Studio»"
     echo "  🛑 Остановить: ./stop.sh"
     echo ""
 
@@ -234,9 +234,9 @@ else
     # Linux — create .desktop file
     echo "[5/5] Создание ярлыка для Linux..."
 
-    cat > "$HOME/.local/share/applications/omnivoice-studio.desktop" << DESKTOP
+    cat > "$HOME/.local/share/applications/helix-studio.desktop" << DESKTOP
 [Desktop Entry]
-Name=OmniVoice Studio
+Name=Helix Studio
 Comment=AI Text-to-Speech Studio
 Exec=bash -c 'cd "$APP_DIR" && ./run.sh && xdg-open http://localhost:$PORT'
 Terminal=true
@@ -246,7 +246,7 @@ DESKTOP
 
     echo ""
     echo "  ✅ Установка завершена!"
-    echo "  → Найдите «OmniVoice Studio» в меню приложений"
+    echo "  → Найдите «Helix Studio» в меню приложений"
     echo "  → Или запустите: ./run.sh"
     echo ""
 fi

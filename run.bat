@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul 2>&1
 :: ═══════════════════════════════════════════════════
-::  OmniVoice Studio — Запуск (Windows)
+::  Helix Studio — Запуск (Windows)
 :: ═══════════════════════════════════════════════════
 
 cd /d "%~dp0"
@@ -11,7 +11,7 @@ if "%PORT%"=="" set PORT=8001
 
 echo.
 echo   ╔══════════════════════════════════╗
-echo   ║     OmniVoice Studio             ║
+echo   ║     Helix Studio             ║
 echo   ╚══════════════════════════════════╝
 echo.
 

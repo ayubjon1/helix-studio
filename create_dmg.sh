@@ -1,17 +1,17 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════
-#  Создание OmniVoice Studio.dmg
+#  Создание Helix Studio.dmg
 # ═══════════════════════════════════════════════════
 set -e
 
 cd "$(dirname "$0")"
 APP_DIR="$(pwd)"
 
-DMG_NAME="OmniVoice-Studio"
+DMG_NAME="Helix-Studio"
 DMG_PATH="$HOME/Desktop/$DMG_NAME.dmg"
 TMP_DMG="/tmp/$DMG_NAME-tmp.dmg"
 STAGING="/tmp/$DMG_NAME-staging"
-APP_NAME="OmniVoice Studio"
+APP_NAME="Helix Studio"
 
 echo ""
 echo "  Сборка $DMG_NAME.dmg ..."
@@ -31,7 +31,7 @@ mkdir -p "$STAGING"
 cp -R "$APP_DIR/$APP_NAME.app" "$STAGING/"
 
 # Create the project folder that the app needs
-PROJECT_DIR="$STAGING/OmniVoice Studio Data"
+PROJECT_DIR="$STAGING/Helix Studio Data"
 mkdir -p "$PROJECT_DIR/static"
 mkdir -p "$PROJECT_DIR/voice_presets"
 mkdir -p "$PROJECT_DIR/uploads"
@@ -113,7 +113,7 @@ tell application "Finder"
         -- Position items
         set position of item "$APP_NAME.app" of container window to {160, 180}
         set position of item "Applications" of container window to {460, 180}
-        set position of item "OmniVoice Studio Data" of container window to {310, 340}
+        set position of item "Helix Studio Data" of container window to {310, 340}
         close
         open
         update without registering applications
@@ -145,15 +145,15 @@ echo ""
 echo "  Что увидит пользователь:"
 echo "  ┌──────────────────────────────────────┐"
 echo "  │                                      │"
-echo "  │   [OmniVoice Studio]  →  [Applications]  │"
+echo "  │   [Helix Studio]  →  [Applications]  │"
 echo "  │                                      │"
-echo "  │        [OmniVoice Studio Data]       │"
+echo "  │        [Helix Studio Data]       │"
 echo "  │                                      │"
 echo "  └──────────────────────────────────────┘"
 echo ""
 echo "  Инструкция для пользователя:"
 echo "  1. Открыть .dmg"
-echo "  2. Перетащить «OmniVoice Studio» в Applications"
-echo "  3. Перетащить «OmniVoice Studio Data» куда угодно (например ~/Documents)"
+echo "  2. Перетащить «Helix Studio» в Applications"
+echo "  3. Перетащить «Helix Studio Data» куда угодно (например ~/Documents)"
 echo "  4. Запустить приложение — оно само доустановит Python и модель"
 echo ""

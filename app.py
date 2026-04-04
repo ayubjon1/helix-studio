@@ -1,5 +1,5 @@
 """
-OmniVoice Studio — Native Desktop App
+Helix Studio — Native Desktop App
 Запускает FastAPI сервер + нативное окно через pywebview.
 """
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     server_thread.start()
 
     # Wait for model to load
-    print("OmniVoice Studio — загрузка модели...")
+    print("Helix Studio — загрузка модели...")
     if not wait_for_server():
         print("Ошибка: сервер не запустился")
         sys.exit(1)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # Open native window
     webview.create_window(
-        title="OmniVoice Studio",
+        title="Helix Studio",
         url=f"http://{HOST}:{PORT}",
         width=1300,
         height=850,

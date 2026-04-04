@@ -1,2 +1,2 @@
 #!/bin/bash
-pkill -f "uvicorn server:app" 2>/dev/null && echo "OmniVoice Studio остановлен" || echo "Сервер не запущен"
+pkill -f "uvicorn server:app" 2>/dev/null && echo "Helix Studio остановлен" || echo "Сервер не запущен"

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════
-//  OmniVoice Studio — Frontend Logic v2
+//  Helix Studio — Frontend Logic v2
 // ═══════════════════════════════════════════════════
 
 const $ = (sel) => document.querySelector(sel);

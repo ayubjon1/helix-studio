@@ -1,19 +1,19 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════
-#  OmniVoice Studio — Полная сборка .dmg
+#  Helix Studio — Полная сборка .dmg
 # ═══════════════════════════════════════════════════
 set -e
 
 cd "$(dirname "$0")"
 SRC_DIR="$(pwd)"
 
-APP_NAME="OmniVoice Studio"
-DATA_DIR_NAME="OmniVoice Studio Data"
-DMG_PATH="$HOME/Desktop/OmniVoice-Studio.dmg"
+APP_NAME="Helix Studio"
+DATA_DIR_NAME="Helix Studio Data"
+DMG_PATH="$HOME/Desktop/Helix-Studio.dmg"
 
 echo ""
 echo "  ╔══════════════════════════════════════╗"
-echo "  ║  🎙 OmniVoice Studio — Сборка DMG   ║"
+echo "  ║  🎙 Helix Studio — Сборка DMG   ║"
 echo "  ╚══════════════════════════════════════╝"
 echo ""
 
@@ -32,11 +32,11 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << 'PLIST'
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>OmniVoice Studio</string>
+    <string>Helix Studio</string>
     <key>CFBundleDisplayName</key>
-    <string>OmniVoice Studio</string>
+    <string>Helix Studio</string>
     <key>CFBundleIdentifier</key>
-    <string>com.omnivoice.studio</string>
+    <string>com.helix.studio</string>
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>CFBundleShortVersionString</key>
@@ -61,16 +61,16 @@ cat > "$APP_BUNDLE/Contents/MacOS/launcher" << 'LAUNCHER'
 export PATH="$HOME/.local/bin:$PATH"
 
 PORT=8001
-APP_SUPPORT="$HOME/Library/Application Support/OmniVoice Studio"
+APP_SUPPORT="$HOME/Library/Application Support/Helix Studio"
 LOG_FILE="$APP_SUPPORT/server.log"
 
 # ─── Find data directory ───
 DATA_DIR=""
 SEARCH_PATHS=(
     "$APP_SUPPORT"
-    "$HOME/Documents/OmniVoice Studio Data"
-    "$HOME/OmniVoice Studio Data"
-    "$(dirname "$(dirname "$(dirname "$(dirname "$0")")")")/OmniVoice Studio Data"
+    "$HOME/Documents/Helix Studio Data"
+    "$HOME/Helix Studio Data"
+    "$(dirname "$(dirname "$(dirname "$(dirname "$0")")")")/Helix Studio Data"
 )
 
 for p in "${SEARCH_PATHS[@]}"; do
@@ -83,7 +83,7 @@ done
 if [ -z "$DATA_DIR" ]; then
     # First launch — ask user to locate or auto-setup
     osascript -e '
-    display dialog "Первый запуск OmniVoice Studio!\n\nПриложение автоматически:\n• Установит Python 3.12\n• Скачает зависимости\n• Загрузит AI-модель (~3 ГБ)\n\nЭто займёт 5-10 минут.\nДалее запуск будет мгновенным." with title "OmniVoice Studio" buttons {"Отмена", "Установить"} default button "Установить" with icon note
+    display dialog "Первый запуск Helix Studio!\n\nПриложение автоматически:\n• Установит Python 3.12\n• Скачает зависимости\n• Загрузит AI-модель (~3 ГБ)\n\nЭто займёт 5-10 минут.\nДалее запуск будет мгновенным." with title "Helix Studio" buttons {"Отмена", "Установить"} default button "Установить" with icon note
     ' 2>/dev/null || exit 0
 
     # Setup in Application Support
@@ -92,12 +92,12 @@ if [ -z "$DATA_DIR" ]; then
 
     # Find the Data folder from DMG or near the .app
     BUNDLE_DIR="$(dirname "$(dirname "$(dirname "$(dirname "$0")")")")"
-    SOURCE_DATA="$BUNDLE_DIR/OmniVoice Studio Data"
+    SOURCE_DATA="$BUNDLE_DIR/Helix Studio Data"
 
     if [ -d "$SOURCE_DATA" ]; then
         cp -R "$SOURCE_DATA/"* "$DATA_DIR/"
     else
-        osascript -e 'display dialog "Не найдена папка «OmniVoice Studio Data».\n\nУбедитесь что она находится рядом с приложением." with title "OmniVoice Studio" buttons {"OK"} with icon stop' 2>/dev/null
+        osascript -e 'display dialog "Не найдена папка «Helix Studio Data».\n\nУбедитесь что она находится рядом с приложением." with title "Helix Studio" buttons {"OK"} with icon stop' 2>/dev/null
         exit 1
     fi
 fi
@@ -109,7 +109,7 @@ mkdir -p "$APP_SUPPORT"
 if curl -s "http://localhost:$PORT/api/languages" > /dev/null 2>&1; then
     .venv/bin/python -c "
 import webview
-webview.create_window('OmniVoice Studio', 'http://127.0.0.1:$PORT', width=1300, height=850, min_size=(900,600), text_select=True)
+webview.create_window('Helix Studio', 'http://127.0.0.1:$PORT', width=1300, height=850, min_size=(900,600), text_select=True)
 webview.start()
 "
     exit 0
@@ -117,7 +117,7 @@ fi
 
 # ─── Install uv if needed ───
 if ! command -v uv &> /dev/null; then
-    osascript -e 'display notification "Установка менеджера Python..." with title "OmniVoice Studio"' 2>/dev/null
+    osascript -e 'display notification "Установка менеджера Python..." with title "Helix Studio"' 2>/dev/null
     curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null
     export PATH="$HOME/.local/bin:$PATH"
 fi
@@ -125,19 +125,19 @@ fi
 # ─── Create venv if needed ───
 cd "$DATA_DIR"
 if [ ! -d ".venv" ]; then
-    osascript -e 'display notification "Установка Python 3.12..." with title "OmniVoice Studio"' 2>/dev/null
+    osascript -e 'display notification "Установка Python 3.12..." with title "Helix Studio"' 2>/dev/null
     uv venv --python 3.12 .venv 2>/dev/null
 fi
 
 # ─── Install deps if needed ───
 if ! .venv/bin/python -c "import omnivoice" 2>/dev/null; then
-    osascript -e 'display notification "Установка зависимостей (может занять несколько минут)..." with title "OmniVoice Studio"' 2>/dev/null
+    osascript -e 'display notification "Установка зависимостей (может занять несколько минут)..." with title "Helix Studio"' 2>/dev/null
     uv pip install --python .venv/bin/python -r requirements.txt --quiet 2>/dev/null
     .venv/bin/python -c "import static_ffmpeg; static_ffmpeg.add_paths()" 2>/dev/null
 fi
 
 # ─── Launch native app ───
-osascript -e 'display notification "Загрузка AI-модели..." with title "OmniVoice Studio" subtitle "Первый запуск загрузит ~3 ГБ"' 2>/dev/null
+osascript -e 'display notification "Загрузка AI-модели..." with title "Helix Studio" subtitle "Первый запуск загрузит ~3 ГБ"' 2>/dev/null
 
 .venv/bin/python app.py > "$LOG_FILE" 2>&1
 # When window is closed, stop the server
@@ -147,8 +147,8 @@ LAUNCHER
 chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
 
 # Copy icon if exists
-if [ -f "$SRC_DIR/OmniVoice Studio.app/Contents/Resources/icon.icns" ]; then
-    cp "$SRC_DIR/OmniVoice Studio.app/Contents/Resources/icon.icns" "$APP_BUNDLE/Contents/Resources/icon.icns"
+if [ -f "$SRC_DIR/Helix Studio.app/Contents/Resources/icon.icns" ]; then
+    cp "$SRC_DIR/Helix Studio.app/Contents/Resources/icon.icns" "$APP_BUNDLE/Contents/Resources/icon.icns"
 fi
 
 # ─── 2. Prepare Data folder ───
@@ -181,15 +181,15 @@ ln -s /Applications "$STAGING/Applications"
 # Create README in DMG
 cat > "$STAGING/УСТАНОВКА.txt" << 'README'
 ╔══════════════════════════════════════════════╗
-║         OmniVoice Studio — Установка         ║
+║         Helix Studio — Установка         ║
 ╚══════════════════════════════════════════════╝
 
-1. Перетащите «OmniVoice Studio» в папку «Applications»
+1. Перетащите «Helix Studio» в папку «Applications»
 
-2. Перетащите «OmniVoice Studio Data» в Documents
+2. Перетащите «Helix Studio Data» в Documents
    (или оставьте где есть — приложение найдёт)
 
-3. Запустите «OmniVoice Studio» из Applications
+3. Запустите «Helix Studio» из Applications
 
 При первом запуске приложение автоматически:
   • Установит Python 3.12
@@ -200,8 +200,8 @@ cat > "$STAGING/УСТАНОВКА.txt" << 'README'
 
 Для удаления:
   • Удалите приложение из Applications
-  • Удалите ~/Library/Application Support/OmniVoice Studio
-  • Удалите папку OmniVoice Studio Data
+  • Удалите ~/Library/Application Support/Helix Studio
+  • Удалите папку Helix Studio Data
 README
 
 rm -f "$DMG_PATH"
@@ -220,7 +220,7 @@ echo "  📦 $DMG_PATH ($SIZE)"
 echo ""
 echo "  Пользователь:"
 echo "  1. Открывает .dmg"
-echo "  2. Видит: [OmniVoice Studio] → [Applications]"
+echo "  2. Видит: [Helix Studio] → [Applications]"
 echo "  3. Перетаскивает и запускает"
 echo "  4. При первом запуске — автоустановка всего"
 echo ""
