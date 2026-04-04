@@ -11,42 +11,60 @@ if "%PORT%"=="" set PORT=8001
 
 echo.
 echo   ╔══════════════════════════════════╗
-echo   ║     Helix Studio             ║
+echo   ║       Helix Studio               ║
 echo   ╚══════════════════════════════════╝
 echo.
 
 :: 1. Check/install uv
 where uv >nul 2>&1
 if errorlevel 1 (
-    echo [1/4] Установка uv...
+    echo [1/5] Установка uv...
     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     set "PATH=%USERPROFILE%\.local\bin;%PATH%"
 ) else (
-    echo [1/4] uv уже установлен
+    echo [1/5] uv ✓
 )
 
 :: 2. Create venv
 if not exist ".venv" (
-    echo [2/4] Создание виртуального окружения...
+    echo [2/5] Создание виртуального окружения...
     uv venv --python 3.12 .venv
 ) else (
-    echo [2/4] Виртуальное окружение уже создано
+    echo [2/5] Python ✓
 )
 
 :: 3. Install dependencies
-echo [3/4] Установка зависимостей...
+echo [3/5] Установка зависимостей...
 uv pip install --python .venv\Scripts\python.exe -r requirements.txt --quiet
 
-:: 4. Download ffmpeg
+:: 4. Check for NVIDIA GPU and install CUDA PyTorch
+where nvidia-smi >nul 2>&1
+if not errorlevel 1 (
+    .venv\Scripts\python.exe -c "import torch; assert torch.cuda.is_available()" >nul 2>&1
+    if errorlevel 1 (
+        echo [4/5] Обнаружена NVIDIA GPU — установка PyTorch с CUDA...
+        uv pip install --python .venv\Scripts\python.exe torch torchaudio --index-url https://download.pytorch.org/whl/cu124 --quiet
+    ) else (
+        echo [4/5] CUDA ✓
+    )
+) else (
+    echo [4/5] GPU: CPU
+)
+
+:: 5. Download ffmpeg
 .venv\Scripts\python.exe -c "import static_ffmpeg; static_ffmpeg.add_paths()" 2>nul
 
-:: 5. Launch
-echo [4/4] Запуск сервера...
+:: Launch native window
+echo [5/5] Запуск Helix Studio...
 echo.
-echo   * Открой в браузере: http://localhost:%PORT%
-echo   * Для остановки нажми Ctrl+C
-echo.
-
-.venv\Scripts\python.exe -m uvicorn server:app --host 0.0.0.0 --port %PORT%
+.venv\Scripts\python.exe app.py
+if errorlevel 1 (
+    echo.
+    echo   Нативное окно не запустилось, открываю в браузере...
+    echo   * http://localhost:%PORT%
+    echo   * Для остановки нажми Ctrl+C
+    echo.
+    .venv\Scripts\python.exe -m uvicorn server:app --host 0.0.0.0 --port %PORT%
+)
 
 pause

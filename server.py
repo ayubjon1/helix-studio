@@ -73,7 +73,12 @@ def save_presets_index(presets: list[dict]):
 async def lifespan(app: FastAPI):
     global model
     print("Loading OmniVoice model...")
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    elif torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
     model = OmniVoice.from_pretrained(
         "k2-fsa/OmniVoice",
         device_map=device,

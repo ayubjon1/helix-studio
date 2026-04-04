@@ -1,8 +1,9 @@
 # Helix Studio
 
-Веб-приложение для синтеза речи на 600+ языках. Работает полностью локально.
+AI-приложение для синтеза речи на 600+ языках. Работает полностью локально.
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Возможности
@@ -10,50 +11,81 @@
 - **Текст → Речь** — введи текст, получи аудио. 600+ языков
 - **Клонирование голоса** — загрузи 3-30 сек аудио, и модель заговорит этим голосом
 - **Дизайн голоса** — опиши голос текстом (пол, возраст, акцент, тон)
-- **Обрезка аудио** — визуальный триммер с waveform прямо в браузере
+- **Обрезка аудио** — визуальный триммер с waveform прямо в приложении
 - **Голосовые пресеты** — сохраняй и переиспользуй клонированные голоса
-- **Невербальные вставки** — [laughter], [sigh], [surprise-ah] и другие
+- **Невербальные вставки** — `[laughter]`, `[sigh]`, `[surprise-ah]` и другие
 - **Расширенные параметры** — guidance scale, temperature, denoise, скорость, длительность
+- **Нативное окно** — работает как обычное приложение (macOS, Windows)
 - **История генераций** — все результаты сохраняются
 
-## Требования
+## Платформы
 
-- **macOS** (Apple Silicon или Intel) или **Windows** или **Linux**
-- Интернет — только при первом запуске (скачивание модели ~2 ГБ)
-- 8+ ГБ RAM рекомендуется
+| Платформа | GPU | Нативное окно | Установка |
+|---|---|---|---|
+| **macOS** (Apple Silicon) | MPS | Да | `./install.sh` → `.app` |
+| **macOS** (Intel) | CPU | Да | `./install.sh` → `.app` |
+| **Windows** (NVIDIA) | CUDA | Да | `run.bat` |
+| **Windows** (без GPU) | CPU | Да | `run.bat` |
+| **Linux** (NVIDIA) | CUDA | Браузер | `./run.sh` |
+| **Linux** (без GPU) | CPU | Браузер | `./run.sh` |
 
-## Запуск
+CUDA устанавливается автоматически при обнаружении NVIDIA GPU.
 
-### Mac / Linux
+## Быстрый старт
+
+### macOS
 
 ```bash
-./run.sh
+git clone https://github.com/ayubjon1/helix-studio.git
+cd helix-studio
+./install.sh
 ```
+
+Создаст приложение `Helix Studio.app` — можно перетащить в Applications.
 
 ### Windows
 
 ```
+git clone https://github.com/ayubjon1/helix-studio.git
+cd helix-studio
 run.bat
 ```
 
-Скрипт автоматически:
-1. Установит `uv` (менеджер Python)
-2. Создаст виртуальное окружение с Python 3.12
-3. Установит все зависимости
-4. Скачает модель OmniVoice (~2 ГБ, при первом запуске)
-5. Запустит сервер на http://localhost:8001
+### Linux
+
+```bash
+git clone https://github.com/ayubjon1/helix-studio.git
+cd helix-studio
+./run.sh
+```
+
+## Что происходит при первом запуске
+
+1. Устанавливается `uv` (менеджер Python)
+2. Создаётся виртуальное окружение с Python 3.12
+3. Устанавливаются зависимости + PyTorch (с CUDA для NVIDIA)
+4. Скачивается AI-модель (~3 ГБ)
+5. Открывается приложение
+
+Первый запуск: **5-10 минут**. Далее: **~30 секунд**.
 
 ## Горячие клавиши
 
 | Клавиша | Действие |
-|---------|----------|
+|---|---|
 | `Ctrl+Enter` | Генерировать |
 | `Space` | Играть / Пауза |
 | `1` `2` `3` | Переключение режимов |
 
+## Удаление
+
+**macOS:** удалить приложение + `~/Library/Application Support/Helix Studio`
+**Windows/Linux:** удалить папку `helix-studio`
+
+Модель кешируется в `~/.cache/huggingface/` — удалить при необходимости.
+
 ## Технологии
 
-- [OmniVoice](https://github.com/k2-fsa/OmniVoice) — zero-shot TTS модель
-- FastAPI — бэкенд
-- Vanilla JS — фронтенд
+- [OmniVoice](https://github.com/k2-fsa/OmniVoice) — zero-shot TTS модель (600+ языков)
+- FastAPI + pywebview — бэкенд + нативное окно
 - PyTorch — инференс (MPS / CUDA / CPU)
