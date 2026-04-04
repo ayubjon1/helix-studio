@@ -121,8 +121,7 @@ fi
 # ─── Launch native app ───
 osascript -e 'display notification "Запуск... ~30 сек" with title "Helix Studio"' 2>/dev/null
 
-.venv/bin/python app.py > "$LOG_FILE" 2>&1
-pkill -f "uvicorn server:app" 2>/dev/null
+exec -a "Helix Studio" .venv/bin/python app.py > "$LOG_FILE" 2>&1
 LAUNCHER
 
 chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
