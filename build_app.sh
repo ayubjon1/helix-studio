@@ -121,7 +121,15 @@ fi
 # ─── Launch native app ───
 osascript -e 'display notification "Запуск... ~30 сек" with title "Helix Studio"' 2>/dev/null
 
-exec -a "Helix Studio" .venv/bin/python app.py > "$LOG_FILE" 2>&1
+# Create hardlink to python with app name so Dock shows "HelixStudio"
+APPBIN=".venv/bin/HelixStudio"
+if [ ! -f "$APPBIN" ]; then
+    REAL_PYTHON="$(readlink -f .venv/bin/python)"
+    ln "$REAL_PYTHON" "$APPBIN" 2>/dev/null || ln -s "$REAL_PYTHON" "$APPBIN"
+fi
+PYLIB_DIR="$(dirname "$(readlink -f .venv/bin/python)")/../lib"
+export DYLD_LIBRARY_PATH="$PYLIB_DIR:${DYLD_LIBRARY_PATH:-}"
+exec "$APPBIN" app.py > "$LOG_FILE" 2>&1
 LAUNCHER
 
 chmod +x "$APP_BUNDLE/Contents/MacOS/launcher"
