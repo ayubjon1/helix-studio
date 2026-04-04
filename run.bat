@@ -54,17 +54,9 @@ if not errorlevel 1 (
 :: 5. Download ffmpeg
 .venv\Scripts\python.exe -c "import static_ffmpeg; static_ffmpeg.add_paths()" 2>nul
 
-:: Launch native window
+:: Launch native app
 echo [5/5] Запуск Helix Studio...
 echo.
 .venv\Scripts\python.exe app.py
-if errorlevel 1 (
-    echo.
-    echo   Нативное окно не запустилось, открываю в браузере...
-    echo   * http://localhost:%PORT%
-    echo   * Для остановки нажми Ctrl+C
-    echo.
-    .venv\Scripts\python.exe -m uvicorn server:app --host 0.0.0.0 --port %PORT%
-)
 
 pause

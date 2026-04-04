@@ -36,20 +36,9 @@ def wait_for_server(timeout=180):
     return False
 
 
-def open_in_browser():
-    """Fallback: open in default browser."""
-    import webbrowser
-    webbrowser.open(f"http://{HOST}:{PORT}")
-    print(f"  Открыто в браузере: http://{HOST}:{PORT}")
-    print("  Для остановки нажмите Ctrl+C")
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-
-
 if __name__ == "__main__":
+    import webview
+
     # Start server in background
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
@@ -69,23 +58,15 @@ if __name__ == "__main__":
         print("Ошибка: сервер не запустился за 3 минуты")
         sys.exit(1)
 
-    print("Готово! Открываю приложение...")
+    print("Готово!")
 
-    # Try native window, fallback to browser
-    try:
-        import webview
-        webview.create_window(
-            title="Helix Studio",
-            url=f"http://{HOST}:{PORT}",
-            width=1300,
-            height=850,
-            min_size=(900, 600),
-            text_select=True,
-        )
-        webview.start()
-    except ImportError:
-        print("  pywebview не установлен — открываю в браузере")
-        open_in_browser()
-    except Exception as e:
-        print(f"  Нативное окно не доступно ({e}) — открываю в браузере")
-        open_in_browser()
+    # Open native window
+    webview.create_window(
+        title="Helix Studio",
+        url=f"http://{HOST}:{PORT}",
+        width=1300,
+        height=850,
+        min_size=(900, 600),
+        text_select=True,
+    )
+    webview.start()

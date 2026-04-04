@@ -65,11 +65,8 @@ if not shutil.which('ffmpeg'):
     print('   Скачиваю ffmpeg...')
 " 2>/dev/null
 
-# Launch
-echo "[5/5] Запуск..."
-echo ""
-echo "  ✦ Открой в браузере: http://localhost:$PORT"
-echo "  ✦ Для остановки нажми Ctrl+C"
+# Launch native app
+echo "[5/5] Запуск Helix Studio..."
 echo ""
 
-.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port "$PORT"
+.venv/bin/python app.py
