@@ -4,9 +4,6 @@ Helix Studio — Native Desktop App
 Работает на macOS, Windows, Linux.
 """
 
-import multiprocessing
-multiprocessing.set_start_method("spawn", force=True)
-
 # Set process name BEFORE any other imports
 import platform
 if platform.system() == "Darwin":
@@ -14,14 +11,12 @@ if platform.system() == "Darwin":
         import ctypes, ctypes.util
         libc = ctypes.cdll.LoadLibrary(ctypes.util.find_library("c"))
         libc.setprogname(b"Helix Studio")
-        # Override NSProcessInfo
         from Foundation import NSBundle
         info = NSBundle.mainBundle().infoDictionary()
         if info:
             info["CFBundleName"] = "Helix Studio"
         from AppKit import NSProcessInfo
         NSProcessInfo.processInfo().setValue_forKey_("Helix Studio", "processName")
-        # Override argv[0]
         import sys
         sys.argv[0] = "Helix Studio"
     except Exception:
@@ -41,14 +36,152 @@ from server import app as fastapi_app
 PORT = 8001
 HOST = "127.0.0.1"
 
+SPLASH_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: #0e0e10;
+        color: #e8e4df;
+        font-family: -apple-system, 'Segoe UI', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+    .splash {
+        text-align: center;
+        animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } }
+
+    .logo-img {
+        width: 96px;
+        height: 96px;
+        border-radius: 20px;
+        margin-bottom: 24px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+    }
+    .sub {
+        color: #d4a043;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 32px;
+    }
+
+    .status {
+        font-size: 14px;
+        color: #8a877f;
+        margin-bottom: 20px;
+        min-height: 20px;
+    }
+    #status-text { transition: opacity 0.3s; }
+
+    .progress-track {
+        width: 240px;
+        height: 3px;
+        background: #2a2a30;
+        border-radius: 2px;
+        margin: 0 auto 16px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #a07830, #d4a043, #e8b84d);
+        border-radius: 2px;
+        transition: width 0.5s ease;
+    }
+
+    .dots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .dot {
+        width: 5px;
+        height: 5px;
+        background: #d4a043;
+        border-radius: 50%;
+        animation: dotPulse 1.4s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+        0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+    }
+</style>
+</head>
+<body>
+<div class="splash">
+    <img class="logo-img" src="ICON_DATA" alt="">
+    <h1>Helix Studio</h1>
+    <div class="sub">Studio</div>
+    <div class="status"><span id="status-text">Запуск...</span></div>
+    <div class="progress-track"><div class="progress-bar" id="progress"></div></div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+<script>
+    const steps = [
+        { text: "Инициализация...", pct: 10 },
+        { text: "Загрузка модели...", pct: 30 },
+        { text: "Подготовка AI...", pct: 60 },
+        { text: "Почти готово...", pct: 85 },
+    ];
+    let i = 0;
+    function next() {
+        if (i < steps.length) {
+            document.getElementById("status-text").textContent = steps[i].text;
+            document.getElementById("progress").style.width = steps[i].pct + "%";
+            i++;
+        }
+    }
+    next();
+    setInterval(next, 5000);
+</script>
+</body>
+</html>
+"""
+
+
+def kill_port():
+    """Kill any process using our port."""
+    import subprocess
+    try:
+        result = subprocess.run(["lsof", "-ti", f":{PORT}"], capture_output=True, text=True)
+        for pid in result.stdout.strip().split():
+            if pid:
+                subprocess.run(["kill", "-9", pid], capture_output=True)
+    except Exception:
+        pass
+
 
 def start_server():
-    """Run FastAPI in a background thread."""
+    kill_port()
+    time.sleep(0.5)
     uvicorn.run(fastapi_app, host=HOST, port=PORT, log_level="warning")
 
 
 def wait_for_server(timeout=180):
-    """Wait until the server is ready."""
     import urllib.request
     for _ in range(timeout):
         try:
@@ -61,36 +194,22 @@ def wait_for_server(timeout=180):
 
 if __name__ == "__main__":
     import webview
+    import base64
 
-    # Start server in background
-    server_thread = threading.Thread(target=start_server, daemon=True)
-    server_thread.start()
-
-    # Detect GPU
-    import torch
-    if torch.cuda.is_available():
-        gpu = f"NVIDIA CUDA ({torch.cuda.get_device_name(0)})"
-    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-        gpu = "Apple MPS"
-    else:
-        gpu = "CPU"
-
-    print(f"Helix Studio — загрузка модели ({gpu})...")
-
-    if not wait_for_server():
-        print("Ошибка: сервер не запустился за 3 минуты")
-        sys.exit(1)
-
-    print("Готово!")
-
-    # Resolve icon path
     app_dir = os.path.dirname(os.path.abspath(__file__))
     icon_path = os.path.join(app_dir, "static", "icon.png")
 
-    # Open native window
+    # Embed icon as base64 in splash HTML
+    splash = SPLASH_HTML
+    if os.path.exists(icon_path):
+        with open(icon_path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+        splash = splash.replace("ICON_DATA", f"data:image/png;base64,{b64}")
+
+    # Create window with splash screen
     window = webview.create_window(
         title="Helix Studio",
-        url=f"http://{HOST}:{PORT}",
+        html=splash,
         width=1300,
         height=850,
         min_size=(900, 600),
@@ -98,8 +217,14 @@ if __name__ == "__main__":
         on_top=True,
     )
 
-    def on_loaded():
-        """Set dock icon and remove on_top after load."""
+    boot_lock = {"done": False}
+
+    def boot():
+        """Start server and switch to main app when ready."""
+        if boot_lock["done"]:
+            return
+        boot_lock["done"] = True
+
         # Set macOS dock icon
         if platform.system() == "Darwin":
             try:
@@ -111,8 +236,23 @@ if __name__ == "__main__":
                         ns_app.setApplicationIconImage_(img)
             except Exception:
                 pass
-        time.sleep(0.3)
+
+        time.sleep(0.5)
         window.on_top = False
 
-    window.events.loaded += on_loaded
+        # Start server
+        server_thread = threading.Thread(target=start_server, daemon=True)
+        server_thread.start()
+
+        # Wait and switch to main app
+        if wait_for_server():
+            window.load_url(f"http://{HOST}:{PORT}")
+        else:
+            window.evaluate_js("""
+                document.getElementById('status-text').textContent = 'Ошибка запуска сервера';
+                document.getElementById('progress').style.background = '#c44d4d';
+                document.getElementById('progress').style.width = '100%';
+            """)
+
+    window.events.loaded += lambda: threading.Thread(target=boot, daemon=True).start()
     webview.start(private_mode=False)
