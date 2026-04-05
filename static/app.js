@@ -1069,6 +1069,40 @@ function initPlayer() {
         audioEl.playbackRate = speed;
         $("#playback-speed").textContent = speed + "\u00d7";
     });
+
+    // Download buttons — use fetch+blob for pywebview compatibility
+    $("#player-download").addEventListener("click", (e) => {
+        e.preventDefault();
+        downloadFile($("#player-download").href, "helix-audio.wav");
+    });
+    $("#player-download-mp3").addEventListener("click", (e) => {
+        e.preventDefault();
+        downloadFile($("#player-download-mp3").href, "helix-audio.mp3");
+    });
+}
+
+async function downloadFile(url, filename) {
+    try {
+        // Try pywebview native save dialog
+        if (window.pywebview && window.pywebview.api) {
+            const saved = await window.pywebview.api.save_file(url, filename);
+            if (saved) showToast("Файл сохранён", "success");
+            return;
+        }
+        // Fallback for browser
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Ошибка скачивания");
+        const blob = await res.blob();
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    } catch (err) {
+        showToast(err.message, "error");
+    }
 }
 
 function showPlayer(data) {
@@ -1083,6 +1117,7 @@ function showPlayer(data) {
     $("#player-current").textContent = "0:00";
     $("#meta-elapsed").textContent = data.elapsed ? data.elapsed + "s" : "";
     $("#player-download").href = data.audio_url;
+    $("#player-download-mp3").href = data.audio_url + "/mp3";
     fetchAndDrawWaveform(data.audio_url);
     audioEl.play().catch(() => {});
 }

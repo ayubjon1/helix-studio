@@ -477,4 +477,30 @@ async def serve_audio(filename: str):
     return FileResponse(path, media_type="audio/wav")
 
 
+@app.get("/audio/{filename}/mp3")
+async def serve_audio_mp3(filename: str):
+    wav_path = (GENERATED_DIR / filename).resolve()
+    if not wav_path.is_relative_to(GENERATED_DIR.resolve()):
+        raise HTTPException(403, "Forbidden")
+    if not wav_path.exists():
+        raise HTTPException(404, "Audio not found")
+
+    mp3_path = wav_path.with_suffix(".mp3")
+    if not mp3_path.exists():
+        import subprocess
+        import shutil
+        ffmpeg_bin = shutil.which("ffmpeg")
+        if not ffmpeg_bin:
+            import static_ffmpeg
+            static_ffmpeg.add_paths()
+            ffmpeg_bin = shutil.which("ffmpeg")
+        if not ffmpeg_bin:
+            raise HTTPException(500, "ffmpeg не найден")
+        subprocess.run([ffmpeg_bin, "-i", str(wav_path), "-q:a", "2", str(mp3_path)],
+                       capture_output=True, check=True)
+
+    return FileResponse(mp3_path, media_type="audio/mpeg",
+                        filename=filename.replace(".wav", ".mp3"))
+
+
 app.mount("/", StaticFiles(directory=str(BASE_DIR / "static"), html=True), name="static")

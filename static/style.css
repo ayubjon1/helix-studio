@@ -1441,8 +1441,7 @@ kbd {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    padding: 0.25rem 0.5rem;
     color: var(--text-muted);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -1452,6 +1451,12 @@ kbd {
 .player-download:hover {
     color: var(--amber);
     border-color: var(--amber-dim);
+}
+.dl-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
 }
 
 /* ─── History ─── */

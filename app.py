@@ -218,6 +218,25 @@ if __name__ == "__main__":
             b64 = base64.b64encode(f.read()).decode()
         splash = splash.replace("ICON_DATA", f"data:image/png;base64,{b64}")
 
+    # API exposed to JavaScript for file downloads
+    class Api:
+        def save_file(self, url, default_name):
+            """Save file via native dialog."""
+            import urllib.request
+            result = window.create_file_dialog(
+                webview.SAVE_DIALOG,
+                save_filename=default_name,
+            )
+            if result:
+                save_path = result if isinstance(result, str) else result[0]
+                if url.startswith("/"):
+                    url = f"http://127.0.0.1:{PORT}{url}"
+                urllib.request.urlretrieve(url, save_path)
+                return True
+            return False
+
+    api = Api()
+
     # Create window with splash screen
     window = webview.create_window(
         title="Helix Studio",
@@ -227,6 +246,7 @@ if __name__ == "__main__":
         min_size=(900, 600),
         text_select=True,
         on_top=True,
+        js_api=api,
     )
 
     boot_lock = {"done": False}
