@@ -101,6 +101,8 @@ const I18N = {
         "toast_preset_deleted": "Пресет удалён",
         "toast_downloading": "Скачивание...",
         "Сохраняю...": "Сохраняю...",
+        "Мужчина 东北话": "Мужчина 东北话",
+        "Записать": "Записать",
 
         // Update
         "update_checking": "Проверка обновлений...",
@@ -183,6 +185,8 @@ const I18N = {
         "toast_preset_deleted": "Preset deleted",
         "toast_downloading": "Downloading...",
         "Сохраняю...": "Saving...",
+        "Мужчина 东北话": "Male 东北话",
+        "Записать": "Record",
         "update_checking": "Checking for updates...",
         "update_available": "Update available!",
         "update_latest": "You have the latest version",

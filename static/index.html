@@ -128,12 +128,12 @@
                             <div class="file-drop-content">
                                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" class="file-drop-icon" aria-hidden="true"><path d="M24 32V16M18 22l6-6 6 6"/><rect x="8" y="8" width="32" height="32" rx="4"/></svg>
                                 <p data-i18n="drop_text">Перетащите аудио или <span class="file-drop-link" data-i18n="drop_link">выберите файл</span></p>
-                                <p class="file-drop-hint">WAV, MP3, FLAC — 3-30 сек</p>
+                                <p class="file-drop-hint" data-i18n="drop_hint">WAV, MP3, FLAC — 3-30 сек</p>
                                 <div class="record-divider"><span data-i18n="drop_or_record">или запишите с микрофона</span></div>
                                 <button class="btn-record" id="btn-record" type="button">
                                     <span class="rec-idle">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
-                                        Записать
+                                        <span data-i18n="Записать">Записать</span>
                                     </span>
                                     <span class="rec-active hidden">
                                         <span class="rec-dot"></span>
@@ -177,7 +177,7 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <label class="input-label" for="ref-text" data-i18n="Транскрипция">Транскрипция <span class="label-hint">(необязательно — авто через Whisper)</span></label>
+                        <label class="input-label" for="ref-text"><span data-i18n="Транскрипция">Транскрипция</span> <span class="label-hint" data-i18n="transcription_optional">(необязательно — авто через Whisper)</span></label>
                         <div class="transcribe-row">
                             <textarea id="ref-text" class="text-area small" rows="2" placeholder="Текст, произнесённый в аудио..."></textarea>
                             <button class="btn-transcribe" id="btn-transcribe" title="Автоматическая транскрипция" aria-label="Транскрибировать">
@@ -246,7 +246,7 @@
                             <button class="preset-chip preset-full" data-preset="female, child, very high pitch" data-i18n="Ребёнок">Ребёнок</button>
                             <button class="preset-chip preset-full" data-preset="male, elderly, very low pitch, russian accent" data-i18n="Пожилой с акцентом">Пожилой с акцентом</button>
                             <button class="preset-chip preset-full" data-preset="female, young adult, whisper" data-i18n="Шёпот">Шёпот</button>
-                            <button class="preset-chip preset-full" data-preset="男，中年，低音调，东北话">Мужчина 东北话</button>
+                            <button class="preset-chip preset-full" data-preset="男，中年，低音调，东北话" data-i18n="Мужчина 东北话">Мужчина 东北话</button>
                         </div>
                     </div>
                 </div>
@@ -259,7 +259,7 @@
                     </div>
                     <div class="params-body" id="params-body">
                         <div class="param-row">
-                            <label class="param-label"data-i18n="Язык">Язык <span class="param-value" id="lang-display">Авто</span></label>
+                            <label class="param-label"><span data-i18n="Язык">Язык</span> <span class="param-value" id="lang-display" data-i18n="Авто">Авто</span></label>
                             <div class="lang-picker" id="lang-picker">
                                 <button class="lang-picker-btn" id="lang-picker-btn" type="button">
                                     <span class="lang-picker-flag" id="lang-picker-flag">🌐</span>
@@ -276,18 +276,18 @@
                             <input type="hidden" id="language-select" value="">
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="speed-slider"data-i18n="Скорость">Скорость <span class="param-value" id="speed-display">1.0×</span></label>
+                            <label class="param-label" for="speed-slider"><span data-i18n="Скорость">Скорость</span> <span class="param-value" id="speed-display">1.0×</span></label>
                             <input type="range" id="speed-slider" class="param-slider" min="0.5" max="2.0" step="0.1" value="1.0">
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="steps-slider"data-i18n="Шаги диффузии">Шаги диффузии <span class="param-value" id="steps-display">32</span></label>
+                            <label class="param-label" for="steps-slider"><span data-i18n="Шаги диффузии">Шаги диффузии</span> <span class="param-value" id="steps-display">32</span></label>
                             <input type="range" id="steps-slider" class="param-slider" min="8" max="64" step="4" value="32">
-                            <div class="param-hint">16 = быстро, 32 = баланс, 64 = макс. качество</div>
+                            <div class="param-hint" data-i18n="steps_hint">16 = быстро, 32 = баланс, 64 = макс. качество</div>
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="duration-input"data-i18n="Длительность (сек)">Длительность (сек) <span class="param-value" id="duration-display">Авто</span></label>
+                            <label class="param-label" for="duration-input"><span data-i18n="Длительность (сек)">Длительность (сек)</span> <span class="param-value" id="duration-display" data-i18n="Авто">Авто</span></label>
                             <input type="number" id="duration-input" class="param-number" min="0" max="60" step="0.5" value="0" placeholder="0 = авто">
-                            <div class="param-hint">0 = определяется автоматически по тексту</div>
+                            <div class="param-hint" data-i18n="duration_hint">0 = определяется автоматически по тексту</div>
                         </div>
 
                         <!-- Advanced toggle -->
@@ -299,12 +299,12 @@
                             <div class="param-row">
                                 <label class="param-label" for="guidance-slider">Guidance Scale <span class="param-value" id="guidance-display">2.0</span></label>
                                 <input type="range" id="guidance-slider" class="param-slider" min="1.0" max="5.0" step="0.1" value="2.0">
-                                <div class="param-hint">Усиливает следование инструкциям (1=слабо, 5=строго)</div>
+                                <div class="param-hint" data-i18n="guidance_hint">Усиливает следование инструкциям (1=слабо, 5=строго)</div>
                             </div>
                             <div class="param-row">
                                 <label class="param-label" for="class-temp-slider">Class Temperature <span class="param-value" id="class-temp-display">0.0</span></label>
                                 <input type="range" id="class-temp-slider" class="param-slider" min="0.0" max="2.0" step="0.1" value="0.0">
-                                <div class="param-hint">0 = детерминированный, >0 = случайная вариативность</div>
+                                <div class="param-hint" data-i18n="class_temp_hint">0 = детерминированный, >0 = случайная вариативность</div>
                             </div>
                             <div class="param-row">
                                 <label class="param-label" for="pos-temp-slider">Position Temperature <span class="param-value" id="pos-temp-display">5.0</span></label>
@@ -348,7 +348,7 @@
                             <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
                             <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
                         </div>
-                        <pdata-i18n="output_empty">Введите текст и нажмите «Генерировать»</p>
+                        <p data-i18n="output_empty">Введите текст и нажмите «Генерировать»</p>
                         <p class="output-empty-hint">или <kbd>Ctrl</kbd>+<kbd>Enter</kbd></p>
                     </div>
 
@@ -356,8 +356,8 @@
                         <div class="error-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
                         </div>
-                        <p class="error-message" id="error-message"data-i18n="error_occurred">Произошла ошибка</p>
-                        <button class="error-retry" id="error-retry"data-i18n="Попробовать снова">Попробовать снова</button>
+                        <p class="error-message" id="error-message" data-i18n="error_occurred">Произошла ошибка</p>
+                        <button class="error-retry" id="error-retry" data-i18n="Попробовать снова">Попробовать снова</button>
                     </div>
 
                     <div class="output-player hidden" id="output-player">
