@@ -1299,9 +1299,10 @@ async function loadHistory() {
 function renderHistory(history) {
     const list = $("#history-list");
     const countEl = $("#history-count");
-    if (!history.length) { list.innerHTML = '<div class="history-empty">Пока пусто</div>'; countEl.textContent = ""; return; }
+    const _t = typeof t === "function" ? t : (k) => k;
+    if (!history.length) { list.innerHTML = `<div class="history-empty">${_t("Пока пусто")}</div>`; countEl.textContent = ""; return; }
     countEl.textContent = `(${history.length})`;
-    const modeLabels = { basic: t("ТТС"), clone: t("Клон"), design: t("Дизайн") };
+    const modeLabels = { basic: _t("ТТС"), clone: _t("Клон"), design: _t("Дизайн") };
     list.innerHTML = history.map(item => `
         <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}">
             <div class="history-play"><svg viewBox="0 0 24 24" fill="currentColor" width="12"><polygon points="6,4 18,12 6,20"/></svg></div>
