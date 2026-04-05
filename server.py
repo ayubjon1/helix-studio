@@ -563,4 +563,15 @@ async def serve_audio_mp3(filename: str):
                         filename=filename.replace(".wav", ".mp3"))
 
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
+
+class NoCacheMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        if request.url.path.endswith(('.html', '.js', '.css')):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        return response
+
+app.add_middleware(NoCacheMiddleware)
 app.mount("/", StaticFiles(directory=str(BASE_DIR / "static"), html=True), name="static")
