@@ -77,13 +77,13 @@ BUNDLE_DATA="$(dirname "$0")/../Resources/data"
 
 mkdir -p "$APP_SUPPORT"
 
-# ─── First launch: copy data from bundle to App Support ───
-if [ ! -f "$APP_SUPPORT/server.py" ]; then
-    cp -R "$BUNDLE_DATA/"* "$APP_SUPPORT/"
-    mkdir -p "$APP_SUPPORT/uploads" "$APP_SUPPORT/generated" "$APP_SUPPORT/voice_presets"
-    # Ensure voice_presets/index.json exists
-    [ -f "$APP_SUPPORT/voice_presets/index.json" ] || echo '[]' > "$APP_SUPPORT/voice_presets/index.json"
-fi
+# ─── Always update app files from bundle (preserves user data) ───
+cp "$BUNDLE_DATA/server.py" "$APP_SUPPORT/" 2>/dev/null
+cp "$BUNDLE_DATA/app.py" "$APP_SUPPORT/" 2>/dev/null
+cp "$BUNDLE_DATA/requirements.txt" "$APP_SUPPORT/" 2>/dev/null
+cp -R "$BUNDLE_DATA/static/"* "$APP_SUPPORT/static/" 2>/dev/null
+mkdir -p "$APP_SUPPORT/uploads" "$APP_SUPPORT/generated" "$APP_SUPPORT/voice_presets"
+[ -f "$APP_SUPPORT/voice_presets/index.json" ] || echo '[]' > "$APP_SUPPORT/voice_presets/index.json"
 
 DATA_DIR="$APP_SUPPORT"
 cd "$DATA_DIR"
