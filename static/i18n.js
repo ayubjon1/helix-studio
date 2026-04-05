@@ -213,6 +213,8 @@ function applyLanguage() {
     // Apply translations to all elements with data-i18n attribute
     document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
+        // Skip lang-picker-text if a specific language is selected
+        if (el.id === "lang-picker-text" && document.getElementById("language-select")?.value) return;
         el.textContent = t(key);
     });
     document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
