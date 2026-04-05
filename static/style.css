@@ -1570,6 +1570,86 @@ kbd {
     color: var(--amber-dim) !important;
 }
 
+/* ─── Favorite Button ─── */
+.history-fav {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    opacity: 0.3;
+    transition: all 0.15s;
+    padding: 0.2rem;
+}
+.history-item:hover .history-fav { opacity: 0.6; }
+.history-fav.is-fav { opacity: 1; }
+
+/* ─── Preset Import/Export ─── */
+.presets-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.presets-header-row .input-label { margin-bottom: 0; flex: 1; }
+
+.btn-import-preset {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-import-preset:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+.vp-export {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    padding: 0.15rem 0.3rem;
+    opacity: 0;
+    transition: all 0.15s;
+}
+.voice-preset-card:hover .vp-export { opacity: 1; }
+.vp-export:hover { color: var(--amber); }
+
+/* ─── Light Theme ─── */
+[data-theme="light"] {
+    --bg-deep: #f5f3f0;
+    --bg-surface: #edeae6;
+    --bg-elevated: #e5e2dd;
+    --bg-panel: #f0ede9;
+    --border: #d0cdc6;
+    --border-subtle: #dddad4;
+    --text-primary: #1a1a1a;
+    --text-secondary: #5a5850;
+    --text-muted: #8a877f;
+    --amber: #b08020;
+    --amber-bright: #c89028;
+    --amber-dim: #906818;
+    --amber-glow: rgba(176, 128, 32, 0.12);
+    --amber-glow-strong: rgba(176, 128, 32, 0.22);
+    --red: #c44d4d;
+    --red-glow: rgba(196, 77, 77, 0.1);
+    --green: #3a8a55;
+    --green-glow: rgba(58, 138, 85, 0.3);
+    --shadow-panel: 0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px var(--border);
+}
+
+[data-theme="light"] .noise-overlay { opacity: 0.015; }
+[data-theme="light"] .btn-generate { color: #fff; }
+[data-theme="light"] .loading-wave span { background: #fff; }
+
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
     .studio-grid {

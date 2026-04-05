@@ -18,6 +18,7 @@ let playbackSpeedIdx = 2;
 
 // ─── Init ───
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
     initModeSelector();
     initTextInput();
     initTextImport();
@@ -46,6 +47,27 @@ function showToast(message, type = "info") {
     toast.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
     setTimeout(() => { toast.classList.add("removing"); setTimeout(() => toast.remove(), 300); }, 4000);
+}
+
+// ─── Theme Toggle ───
+function initTheme() {
+    const saved = localStorage.getItem("helix-theme");
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    updateThemeIcon();
+
+    $("#theme-toggle").addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("helix-theme", next);
+        updateThemeIcon();
+    });
+}
+
+function updateThemeIcon() {
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
+    $("#theme-icon-dark").classList.toggle("hidden", isLight);
+    $("#theme-icon-light").classList.toggle("hidden", !isLight);
 }
 
 // ─── Mode Selector ───
@@ -718,6 +740,7 @@ function renderVoicePresets(presets) {
     });
 }
 
+
 async function saveVoicePreset() {
     const file = $("#ref-audio-input").files[0];
     if (!file) { showToast("Сначала загрузите аудиофайл", "error"); return; }
@@ -1204,8 +1227,11 @@ function renderHistory(history) {
     if (!history.length) { list.innerHTML = '<div class="history-empty">Пока пусто</div>'; countEl.textContent = ""; return; }
     countEl.textContent = `(${history.length})`;
     const modeLabels = { basic: "ТТС", clone: "Клон", design: "Дизайн" };
-    list.innerHTML = history.map(item => `
-        <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}">
+    // Sort: favorites first
+    const sorted = [...history].sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
+
+    list.innerHTML = sorted.map(item => `
+        <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}" data-id="${escapeHtml(item.id)}">
             <div class="history-play"><svg viewBox="0 0 24 24" fill="currentColor" width="12"><polygon points="6,4 18,12 6,20"/></svg></div>
             <div class="history-info">
                 <div class="history-text">${escapeHtml(item.text)}</div>
@@ -1215,13 +1241,29 @@ function renderHistory(history) {
                     <span>${(item.timestamp || "").split(" ")[1] || ""}</span>
                 </div>
             </div>
+            <button class="history-fav${item.favorite ? " is-fav" : ""}" data-id="${escapeHtml(item.id)}" title="Избранное">${item.favorite ? "★" : "☆"}</button>
         </div>
     `).join("");
 
     list.querySelectorAll(".history-item").forEach(el => {
-        el.addEventListener("click", () => {
+        el.addEventListener("click", (e) => {
+            if (e.target.closest(".history-fav")) return;
             showPlayer({ audio_url: el.dataset.url, duration: parseFloat(el.dataset.duration) || 0, elapsed: "" });
             audioEl.addEventListener("loadedmetadata", () => { $("#player-duration").textContent = formatTime(audioEl.duration); }, { once: true });
+        });
+    });
+
+    // Favorite toggle
+    list.querySelectorAll(".history-fav").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            const res = await fetch(`/api/history/${id}/favorite`, { method: "POST" });
+            if (res.ok) {
+                const data = await res.json();
+                btn.textContent = data.favorite ? "★" : "☆";
+                btn.classList.toggle("is-fav", data.favorite);
+            }
         });
     });
 }

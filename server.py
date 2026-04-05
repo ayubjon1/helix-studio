@@ -353,7 +353,63 @@ async def preset_preview(preset_id: str):
     return FileResponse(path, media_type="audio/wav")
 
 
+@app.get("/api/presets/{preset_id}/export")
+async def export_preset(preset_id: str):
+    """Export preset as .pt file for sharing."""
+    pt_path = (PRESETS_DIR / f"{preset_id}.pt").resolve()
+    if not pt_path.is_relative_to(PRESETS_DIR.resolve()) or not pt_path.exists():
+        raise HTTPException(404, "Preset not found")
+    presets = load_presets_index()
+    name = next((p["name"] for p in presets if p["id"] == preset_id), "voice")
+    safe_name = "".join(c for c in name if c.isalnum() or c in " -_")[:30]
+    return FileResponse(pt_path, media_type="application/octet-stream",
+                        filename=f"{safe_name}.helixvoice")
+
+
+@app.post("/api/presets/import")
+async def import_preset(name: str = Form(""), file: UploadFile = File(...)):
+    """Import a .helixvoice preset file."""
+    content = await file.read()
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, "Файл слишком большой")
+
+    preset_id = uuid.uuid4().hex[:12]
+    pt_path = PRESETS_DIR / f"{preset_id}.pt"
+    pt_path.write_bytes(content)
+
+    try:
+        vcp = torch.load(str(pt_path), weights_only=False, map_location="cpu")
+        voice_prompts_cache[preset_id] = vcp
+    except Exception:
+        pt_path.unlink(missing_ok=True)
+        raise HTTPException(400, "Некорректный файл пресета")
+
+    preset_name = name.strip() or file.filename.replace(".helixvoice", "").replace(".pt", "")
+    entry = {
+        "id": preset_id,
+        "name": preset_name,
+        "ref_text": getattr(vcp, "ref_text", "")[:100] if hasattr(vcp, "ref_text") else "",
+        "created": time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
+    presets = load_presets_index()
+    presets.insert(0, entry)
+    save_presets_index(presets)
+    return entry
+
+
 # ─── History ───
+@app.post("/api/history/{item_id}/favorite")
+async def toggle_favorite(item_id: str):
+    async with history_lock:
+        history = load_history()
+        for item in history:
+            if item["id"] == item_id:
+                item["favorite"] = not item.get("favorite", False)
+                save_history(history)
+                return {"favorite": item["favorite"]}
+    raise HTTPException(404, "Not found")
+
+
 @app.get("/api/history")
 async def get_history():
     return load_history()
