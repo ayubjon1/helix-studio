@@ -196,6 +196,18 @@ if __name__ == "__main__":
     import webview
     import base64
 
+    # Request microphone permission on macOS
+    if platform.system() == "Darwin":
+        try:
+            import AVFoundation
+            status = AVFoundation.AVCaptureDevice.authorizationStatusForMediaType_(AVFoundation.AVMediaTypeAudio)
+            if status != 3:  # 3 = authorized
+                AVFoundation.AVCaptureDevice.requestAccessForMediaType_completionHandler_(
+                    AVFoundation.AVMediaTypeAudio, lambda granted: None
+                )
+        except Exception:
+            pass
+
     app_dir = os.path.dirname(os.path.abspath(__file__))
     icon_path = os.path.join(app_dir, "static", "icon.png")
 

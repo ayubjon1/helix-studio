@@ -1,3 +1,4 @@
 omnivoice
 static-ffmpeg
 pywebview
+sounddevice

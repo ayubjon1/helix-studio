@@ -20,7 +20,9 @@ let playbackSpeedIdx = 2;
 document.addEventListener("DOMContentLoaded", () => {
     initModeSelector();
     initTextInput();
+    initTextImport();
     initTokenButtons();
+    initMicRecorder();
     initFileUpload();
     initParams();
     initAdvancedParams();
@@ -90,6 +92,110 @@ function initTokenButtons() {
             // Update counter
             $("#char-count").textContent = textarea.value.length;
         });
+    });
+}
+
+// ─── Text File Import ───
+function initTextImport() {
+    const btn = $("#btn-import-text");
+    const input = $("#import-text-input");
+    if (!btn || !input) return;
+
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.click();
+    });
+
+    input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const text = e.target.result.substring(0, 5000);
+            $("#text-input").value = text;
+            $("#char-count").textContent = text.length;
+            showToast(`Загружен: ${file.name}`, "success");
+        };
+        reader.readAsText(file);
+        input.value = "";
+    });
+}
+
+// ─── Microphone Recorder (server-side via sounddevice) ───
+function initMicRecorder() {
+    const btn = $("#btn-record");
+    if (!btn) return;
+
+    let recording = false;
+    let startTime = 0;
+    let timerInterval = null;
+
+    const idleEl = btn.querySelector(".rec-idle");
+    const activeEl = btn.querySelector(".rec-active");
+    const timerEl = $("#rec-timer");
+
+    btn.addEventListener("click", async () => {
+        if (recording) {
+            // Stop recording
+            btn.disabled = true;
+            try {
+                const res = await fetch("/api/mic/stop", { method: "POST" });
+                if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || "Ошибка"); }
+                const data = await res.json();
+
+                // Download the recorded file and feed into trimmer
+                const audioRes = await fetch(data.url);
+                const blob = await audioRes.blob();
+                const file = new File([blob], "recording.wav", { type: "audio/wav" });
+
+                const input = $("#ref-audio-input");
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+
+                $("#file-name").textContent = "recording.wav";
+                $("#selected-preset-id").value = "";
+                $$(".voice-preset-card").forEach(c => c.classList.remove("selected"));
+                $(".file-drop-content").classList.add("hidden");
+                $("#file-loaded").classList.remove("hidden");
+                initTrimmer(file);
+
+                const dur = ((Date.now() - startTime) / 1000).toFixed(1);
+                showToast(`Записано ${dur}с`, "success");
+            } catch (err) {
+                showToast(err.message, "error");
+            } finally {
+                recording = false;
+                clearInterval(timerInterval);
+                btn.classList.remove("recording");
+                idleEl.classList.remove("hidden");
+                activeEl.classList.add("hidden");
+                btn.disabled = false;
+            }
+            return;
+        }
+
+        // Start recording
+        try {
+            const res = await fetch("/api/mic/start", { method: "POST" });
+            if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || "Ошибка"); }
+
+            recording = true;
+            startTime = Date.now();
+            btn.classList.add("recording");
+            idleEl.classList.add("hidden");
+            activeEl.classList.remove("hidden");
+
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const m = Math.floor(elapsed / 60);
+                const s = elapsed % 60;
+                timerEl.textContent = `${m}:${s.toString().padStart(2, "0")}`;
+                if (elapsed >= 30) btn.click(); // Auto-stop
+            }, 250);
+        } catch (err) {
+            showToast("Не удалось начать запись: " + err.message, "error");
+        }
     });
 }
 

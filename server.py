@@ -397,6 +397,75 @@ async def transcribe_audio(audio: UploadFile = File(...)):
         tmp_path.unlink(missing_ok=True)
 
 
+# ─── Microphone Recording ───
+recording_state = {"active": False, "data": [], "sr": 24000}
+
+
+@app.post("/api/mic/start")
+async def mic_start():
+    import sounddevice as sd
+    import numpy as np
+
+    if recording_state["active"]:
+        raise HTTPException(400, "Запись уже идёт")
+
+    sr = 24000
+    recording_state["active"] = True
+    recording_state["data"] = []
+    recording_state["sr"] = sr
+
+    def callback(indata, frames, time_info, status):
+        if recording_state["active"]:
+            recording_state["data"].append(indata.copy())
+
+    recording_state["stream"] = sd.InputStream(
+        samplerate=sr, channels=1, dtype="float32", callback=callback
+    )
+    recording_state["stream"].start()
+    return {"ok": True}
+
+
+@app.post("/api/mic/stop")
+async def mic_stop():
+    import numpy as np
+
+    if not recording_state["active"]:
+        raise HTTPException(400, "Запись не идёт")
+
+    recording_state["active"] = False
+    recording_state["stream"].stop()
+    recording_state["stream"].close()
+
+    if not recording_state["data"]:
+        raise HTTPException(400, "Пустая запись")
+
+    audio_np = np.concatenate(recording_state["data"], axis=0)
+    audio_tensor = torch.from_numpy(audio_np.T)  # (1, T)
+
+    # Limit to 30 seconds
+    sr = recording_state["sr"]
+    max_samples = sr * 30
+    if audio_tensor.shape[1] > max_samples:
+        audio_tensor = audio_tensor[:, :max_samples]
+
+    filename = f"rec_{uuid.uuid4().hex[:8]}.wav"
+    rec_path = UPLOAD_DIR / filename
+    torchaudio.save(str(rec_path), audio_tensor, sr)
+
+    recording_state["data"] = []
+    return {"filename": filename, "url": f"/uploads/{filename}"}
+
+
+@app.get("/uploads/{filename}")
+async def serve_upload(filename: str):
+    path = (UPLOAD_DIR / filename).resolve()
+    if not path.is_relative_to(UPLOAD_DIR.resolve()):
+        raise HTTPException(403, "Forbidden")
+    if not path.exists():
+        raise HTTPException(404, "Not found")
+    return FileResponse(path, media_type="audio/wav")
+
+
 # ─── Audio serving ───
 @app.get("/audio/{filename}")
 async def serve_audio(filename: str):

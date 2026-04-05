@@ -90,6 +90,10 @@
                             <button class="token-btn" data-token="[question-en]" title="Вопрос">🤔</button>
                             <button class="token-btn" data-token="[confirmation-en]" title="Подтверждение">👍</button>
                             <button class="token-btn" data-token="[dissatisfaction-hnn]" title="Недовольство">😤</button>
+                            <button class="token-btn" id="btn-import-text" title="Импорт из файла (TXT)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </button>
+                            <input type="file" id="import-text-input" accept=".txt,.md,.text" hidden>
                         </div>
                         <div class="char-count"><span id="char-count">0</span> / 5000</div>
                     </div>
@@ -115,6 +119,18 @@
                                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" class="file-drop-icon" aria-hidden="true"><path d="M24 32V16M18 22l6-6 6 6"/><rect x="8" y="8" width="32" height="32" rx="4"/></svg>
                                 <p>Перетащите аудио или <span class="file-drop-link">выберите файл</span></p>
                                 <p class="file-drop-hint">WAV, MP3, FLAC — 3-30 сек</p>
+                                <div class="record-divider"><span>или запишите с микрофона</span></div>
+                                <button class="btn-record" id="btn-record" type="button">
+                                    <span class="rec-idle">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+                                        Записать
+                                    </span>
+                                    <span class="rec-active hidden">
+                                        <span class="rec-dot"></span>
+                                        <span class="rec-timer" id="rec-timer">0:00</span>
+                                        — нажмите чтобы остановить
+                                    </span>
+                                </button>
                             </div>
                             <div class="file-drop-loaded hidden" id="file-loaded">
                                 <div class="file-info">
