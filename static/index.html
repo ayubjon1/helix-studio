@@ -25,6 +25,12 @@
             </div>
         </div>
         <div class="header-right">
+            <button class="header-btn" id="lang-toggle" aria-label="Language" title="RU / EN">
+                <span id="lang-toggle-text" style="font-size:0.7rem;font-weight:600;">RU</span>
+            </button>
+            <button class="header-btn" id="update-btn" aria-label="Проверить обновления" title="Проверить обновления">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m0 0a9 9 0 0 1 9-9m-9 9a9 9 0 0 0 9 9"/></svg>
+            </button>
             <button class="header-btn" id="theme-toggle" aria-label="Переключить тему" title="Переключить тему">
                 <svg id="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                 <svg id="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" class="hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -46,13 +52,13 @@
     <div class="shortcuts-overlay hidden" id="shortcuts-overlay">
         <div class="shortcuts-panel">
             <div class="shortcuts-header">
-                <h3>Горячие клавиши</h3>
+                <h3 data-i18n="Горячие клавиши">Горячие клавиши</h3>
                 <button class="shortcuts-close" id="shortcuts-close" aria-label="Закрыть">&times;</button>
             </div>
             <div class="shortcuts-list">
-                <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span>Генерировать</span></div>
-                <div class="shortcut-item"><kbd>Space</kbd><span>Играть / Пауза</span></div>
-                <div class="shortcut-item"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Режимы</span></div>
+                <div class="shortcut-item"><kbd>Ctrl</kbd>+<kbd>Enter</kbd><span data-i18n="Генерировать">Генерировать</span></div>
+                <div class="shortcut-item"><kbd>Space</kbd><span data-i18n="shortcut_play">Играть / Пауза</span></div>
+                <div class="shortcut-item"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span data-i18n="shortcut_modes">Режимы</span></div>
             </div>
         </div>
     </div>
@@ -62,7 +68,7 @@
             <!-- Left Panel: Controls -->
             <section class="panel panel-controls">
                 <div class="panel-header">
-                    <h2 class="panel-title">Синтез</h2>
+                    <h2 class="panel-title" data-i18n="Синтез">Синтез</h2>
                     <div class="panel-indicator"></div>
                 </div>
 
@@ -70,22 +76,22 @@
                 <div class="mode-selector" role="tablist" aria-label="Режим синтеза">
                     <button class="mode-btn active" data-mode="basic" role="tab" aria-selected="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"/></svg>
-                        <span>Текст → Речь</span>
+                        <span data-i18n="Текст → Речь">Текст → Речь</span>
                     </button>
                     <button class="mode-btn" data-mode="clone" role="tab" aria-selected="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
-                        <span>Клонирование</span>
+                        <span data-i18n="Клонирование">Клонирование</span>
                     </button>
                     <button class="mode-btn" data-mode="design" role="tab" aria-selected="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3c-1.5 0-3 .5-4 2s-1 4 0 6c.5 1 1.5 2 2 3s.5 3 0 4M16 8c1 1 1.5 3 1 5s-2 3-3 4"/><circle cx="8" cy="5" r="1" fill="currentColor"/></svg>
-                        <span>Дизайн голоса</span>
+                        <span data-i18n="Дизайн голоса">Дизайн голоса</span>
                     </button>
                 </div>
 
                 <!-- Text Input -->
                 <div class="input-group">
-                    <label class="input-label" for="text-input">Текст для синтеза</label>
-                    <textarea id="text-input" class="text-area" rows="5" maxlength="5000" placeholder="Введите текст, который нужно озвучить..."></textarea>
+                    <label class="input-label" for="text-input" data-i18n="Текст для синтеза">Текст для синтеза</label>
+                    <textarea id="text-input" class="text-area" rows="5" maxlength="5000" data-i18n-placeholder="text_placeholder" placeholder="Введите текст, который нужно озвучить..."></textarea>
                     <div class="text-toolbar">
                         <div class="token-buttons" title="Невербальные вставки">
                             <button class="token-btn" data-token="[laughter]" title="Смех">😂</button>
@@ -107,23 +113,23 @@
                 <div id="clone-section" class="mode-section hidden" role="tabpanel">
                     <!-- Saved Voice Presets -->
                     <div class="input-group">
-                        <label class="input-label">Голосовые пресеты</label>
+                        <label class="input-label" data-i18n="Голосовые пресеты">Голосовые пресеты</label>
                         <div class="presets-list" id="voice-presets-list">
-                            <div class="preset-empty">Нет сохранённых голосов</div>
+                            <div class="preset-empty" data-i18n="Нет сохранённых голосов">Нет сохранённых голосов</div>
                         </div>
                         <input type="hidden" id="selected-preset-id" value="">
                     </div>
 
                     <!-- Or upload new -->
                     <div class="input-group">
-                        <label class="input-label">Или загрузите новый голос</label>
+                        <label class="input-label" data-i18n="Или загрузите новый голос">Или загрузите новый голос</label>
                         <div class="file-drop" id="file-drop">
                             <input type="file" id="ref-audio-input" accept="audio/*" hidden>
                             <div class="file-drop-content">
                                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" class="file-drop-icon" aria-hidden="true"><path d="M24 32V16M18 22l6-6 6 6"/><rect x="8" y="8" width="32" height="32" rx="4"/></svg>
-                                <p>Перетащите аудио или <span class="file-drop-link">выберите файл</span></p>
+                                <p data-i18n="drop_text">Перетащите аудио или <span class="file-drop-link" data-i18n="drop_link">выберите файл</span></p>
                                 <p class="file-drop-hint">WAV, MP3, FLAC — 3-30 сек</p>
-                                <div class="record-divider"><span>или запишите с микрофона</span></div>
+                                <div class="record-divider"><span data-i18n="drop_or_record">или запишите с микрофона</span></div>
                                 <button class="btn-record" id="btn-record" type="button">
                                     <span class="rec-idle">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
@@ -157,21 +163,21 @@
                                         </button>
                                         <span class="trimmer-time" id="trimmer-time">0.0s — 0.0s</span>
                                         <span class="trimmer-duration" id="trimmer-duration">= 0.0s</span>
-                                        <button class="trimmer-reset-btn" id="trimmer-reset" title="Сбросить обрезку">Сбросить</button>
+                                        <button class="trimmer-reset-btn" id="trimmer-reset" title="Сбросить обрезку" data-i18n="Сбросить">Сбросить</button>
                                     </div>
                                 </div>
                                 <div class="save-preset-row">
                                     <input type="text" id="preset-name-input" class="preset-name-input" placeholder="Имя пресета...">
                                     <button class="btn-save-preset" id="btn-save-preset" title="Сохранить как пресет">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                                        <span>Сохранить голос</span>
+                                        <span data-i18n="Сохранить голос">Сохранить голос</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="input-group">
-                        <label class="input-label" for="ref-text">Транскрипция <span class="label-hint">(необязательно — авто через Whisper)</span></label>
+                        <label class="input-label" for="ref-text" data-i18n="Транскрипция">Транскрипция <span class="label-hint">(необязательно — авто через Whisper)</span></label>
                         <div class="transcribe-row">
                             <textarea id="ref-text" class="text-area small" rows="2" placeholder="Текст, произнесённый в аудио..."></textarea>
                             <button class="btn-transcribe" id="btn-transcribe" title="Автоматическая транскрипция" aria-label="Транскрибировать">
@@ -184,16 +190,16 @@
                 <!-- Design Mode -->
                 <div id="design-section" class="mode-section hidden" role="tabpanel">
                     <div class="input-group">
-                        <label class="input-label" for="instruct-input">Описание голоса</label>
+                        <label class="input-label" for="instruct-input" data-i18n="Описание голоса">Описание голоса</label>
                         <textarea id="instruct-input" class="text-area" rows="2" placeholder="female, young adult, british accent, low pitch..."></textarea>
                         <div class="design-tags">
                             <div class="tag-group">
-                                <span class="tag-group-label">Пол:</span>
+                                <span class="tag-group-label" data-i18n="Пол:">Пол:</span>
                                 <button class="preset-chip" data-tag="male"><span lang="en">male</span></button>
                                 <button class="preset-chip" data-tag="female"><span lang="en">female</span></button>
                             </div>
                             <div class="tag-group">
-                                <span class="tag-group-label">Возраст:</span>
+                                <span class="tag-group-label" data-i18n="Возраст:">Возраст:</span>
                                 <button class="preset-chip" data-tag="child"><span lang="en">child</span></button>
                                 <button class="preset-chip" data-tag="teenager"><span lang="en">teenager</span></button>
                                 <button class="preset-chip" data-tag="young adult"><span lang="en">young adult</span></button>
@@ -201,7 +207,7 @@
                                 <button class="preset-chip" data-tag="elderly"><span lang="en">elderly</span></button>
                             </div>
                             <div class="tag-group">
-                                <span class="tag-group-label">Тон:</span>
+                                <span class="tag-group-label" data-i18n="Тон:">Тон:</span>
                                 <button class="preset-chip" data-tag="very low pitch"><span lang="en">very low</span></button>
                                 <button class="preset-chip" data-tag="low pitch"><span lang="en">low</span></button>
                                 <button class="preset-chip" data-tag="moderate pitch"><span lang="en">moderate</span></button>
@@ -209,7 +215,7 @@
                                 <button class="preset-chip" data-tag="very high pitch"><span lang="en">very high</span></button>
                             </div>
                             <div class="tag-group">
-                                <span class="tag-group-label">Акцент:</span>
+                                <span class="tag-group-label" data-i18n="Акцент:">Акцент:</span>
                                 <button class="preset-chip" data-tag="american accent"><span lang="en">american</span></button>
                                 <button class="preset-chip" data-tag="british accent"><span lang="en">british</span></button>
                                 <button class="preset-chip" data-tag="australian accent"><span lang="en">australian</span></button>
@@ -229,17 +235,17 @@
                                 <button class="preset-chip" data-tag="济南话">济南话</button>
                             </div>
                             <div class="tag-group">
-                                <span class="tag-group-label">Стиль:</span>
+                                <span class="tag-group-label" data-i18n="Стиль:">Стиль:</span>
                                 <button class="preset-chip" data-tag="whisper"><span lang="en">whisper</span></button>
                             </div>
                         </div>
                         <div class="design-presets">
-                            <span class="tag-group-label">Готовые:</span>
-                            <button class="preset-chip preset-full" data-preset="female, young adult, high pitch, british accent">Молодая британка</button>
-                            <button class="preset-chip preset-full" data-preset="male, middle-aged, low pitch, american accent">Мужчина баритон</button>
-                            <button class="preset-chip preset-full" data-preset="female, child, very high pitch">Ребёнок</button>
-                            <button class="preset-chip preset-full" data-preset="male, elderly, very low pitch, russian accent">Пожилой с акцентом</button>
-                            <button class="preset-chip preset-full" data-preset="female, young adult, whisper">Шёпот</button>
+                            <span class="tag-group-label" data-i18n="Готовые:">Готовые:</span>
+                            <button class="preset-chip preset-full" data-preset="female, young adult, high pitch, british accent" data-i18n="Молодая британка">Молодая британка</button>
+                            <button class="preset-chip preset-full" data-preset="male, middle-aged, low pitch, american accent" data-i18n="Мужчина баритон">Мужчина баритон</button>
+                            <button class="preset-chip preset-full" data-preset="female, child, very high pitch" data-i18n="Ребёнок">Ребёнок</button>
+                            <button class="preset-chip preset-full" data-preset="male, elderly, very low pitch, russian accent" data-i18n="Пожилой с акцентом">Пожилой с акцентом</button>
+                            <button class="preset-chip preset-full" data-preset="female, young adult, whisper" data-i18n="Шёпот">Шёпот</button>
                             <button class="preset-chip preset-full" data-preset="男，中年，低音调，东北话">Мужчина 东北话</button>
                         </div>
                     </div>
@@ -248,12 +254,12 @@
                 <!-- Parameters -->
                 <div class="params-section">
                     <div class="params-header" id="params-toggle">
-                        <span>Параметры генерации</span>
+                        <span data-i18n="Параметры генерации">Параметры генерации</span>
                         <svg class="params-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </div>
                     <div class="params-body" id="params-body">
                         <div class="param-row">
-                            <label class="param-label">Язык <span class="param-value" id="lang-display">Авто</span></label>
+                            <label class="param-label"data-i18n="Язык">Язык <span class="param-value" id="lang-display">Авто</span></label>
                             <div class="lang-picker" id="lang-picker">
                                 <button class="lang-picker-btn" id="lang-picker-btn" type="button">
                                     <span class="lang-picker-flag" id="lang-picker-flag">🌐</span>
@@ -270,23 +276,23 @@
                             <input type="hidden" id="language-select" value="">
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="speed-slider">Скорость <span class="param-value" id="speed-display">1.0×</span></label>
+                            <label class="param-label" for="speed-slider"data-i18n="Скорость">Скорость <span class="param-value" id="speed-display">1.0×</span></label>
                             <input type="range" id="speed-slider" class="param-slider" min="0.5" max="2.0" step="0.1" value="1.0">
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="steps-slider">Шаги диффузии <span class="param-value" id="steps-display">32</span></label>
+                            <label class="param-label" for="steps-slider"data-i18n="Шаги диффузии">Шаги диффузии <span class="param-value" id="steps-display">32</span></label>
                             <input type="range" id="steps-slider" class="param-slider" min="8" max="64" step="4" value="32">
                             <div class="param-hint">16 = быстро, 32 = баланс, 64 = макс. качество</div>
                         </div>
                         <div class="param-row">
-                            <label class="param-label" for="duration-input">Длительность (сек) <span class="param-value" id="duration-display">Авто</span></label>
+                            <label class="param-label" for="duration-input"data-i18n="Длительность (сек)">Длительность (сек) <span class="param-value" id="duration-display">Авто</span></label>
                             <input type="number" id="duration-input" class="param-number" min="0" max="60" step="0.5" value="0" placeholder="0 = авто">
                             <div class="param-hint">0 = определяется автоматически по тексту</div>
                         </div>
 
                         <!-- Advanced toggle -->
                         <div class="advanced-toggle" id="advanced-toggle">
-                            <span>Расширенные параметры</span>
+                            <span data-i18n="Расширенные параметры">Расширенные параметры</span>
                             <svg class="params-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
                         <div class="advanced-params hidden" id="advanced-params">
@@ -317,12 +323,12 @@
                 <button class="btn-generate" id="btn-generate">
                     <div class="btn-generate-content">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="20" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                        <span>Генерировать</span>
+                        <span data-i18n="Генерировать">Генерировать</span>
                         <kbd class="btn-shortcut">Ctrl+Enter</kbd>
                     </div>
                     <div class="btn-generate-loading hidden">
                         <div class="loading-wave"><span></span><span></span><span></span><span></span><span></span></div>
-                        <span>Генерация...</span>
+                        <span data-i18n="Генерация...">Генерация...</span>
                     </div>
                 </button>
             </section>
@@ -330,7 +336,7 @@
             <!-- Right Panel: Output & History -->
             <section class="panel panel-output">
                 <div class="panel-header">
-                    <h2 class="panel-title">Результат</h2>
+                    <h2 class="panel-title" data-i18n="Результат">Результат</h2>
                     <div class="panel-indicator"></div>
                 </div>
 
@@ -342,7 +348,7 @@
                             <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
                             <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
                         </div>
-                        <p>Введите текст и нажмите «Генерировать»</p>
+                        <pdata-i18n="output_empty">Введите текст и нажмите «Генерировать»</p>
                         <p class="output-empty-hint">или <kbd>Ctrl</kbd>+<kbd>Enter</kbd></p>
                     </div>
 
@@ -350,8 +356,8 @@
                         <div class="error-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
                         </div>
-                        <p class="error-message" id="error-message">Произошла ошибка</p>
-                        <button class="error-retry" id="error-retry">Попробовать снова</button>
+                        <p class="error-message" id="error-message"data-i18n="error_occurred">Произошла ошибка</p>
+                        <button class="error-retry" id="error-retry"data-i18n="Попробовать снова">Попробовать снова</button>
                     </div>
 
                     <div class="output-player hidden" id="output-player">
@@ -382,19 +388,20 @@
 
                 <div class="history-section">
                     <div class="history-header">
-                        <h3 class="history-title">История <span class="history-count" id="history-count"></span></h3>
+                        <h3 class="history-title" data-i18n="История">История <span class="history-count" id="history-count"></span></h3>
                         <button class="history-clear" id="history-clear" aria-label="Очистить историю">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
                     <div class="history-list" id="history-list">
-                        <div class="history-empty">Пока пусто</div>
+                        <div class="history-empty" data-i18n="Пока пусто">Пока пусто</div>
                     </div>
                 </div>
             </section>
         </div>
     </main>
     <script src="/lang_data.js"></script>
+    <script src="/i18n.js"></script>
     <script src="/app.js"></script>
     <script>
     // Fix pywebview macOS focus issue

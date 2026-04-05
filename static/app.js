@@ -19,6 +19,8 @@ let playbackSpeedIdx = 2;
 // ─── Init ───
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
+    initLangToggle();
+    initUpdateChecker();
     initModeSelector();
     initTextInput();
     initTextImport();
@@ -47,6 +49,54 @@ function showToast(message, type = "info") {
     toast.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
     setTimeout(() => { toast.classList.add("removing"); setTimeout(() => toast.remove(), 300); }, 4000);
+}
+
+// ─── Language Toggle (i18n) ───
+function initLangToggle() {
+    const btn = $("#lang-toggle");
+    const label = $("#lang-toggle-text");
+    label.textContent = currentLang.toUpperCase();
+
+    btn.addEventListener("click", () => {
+        currentLang = currentLang === "ru" ? "en" : "ru";
+        localStorage.setItem("helix-lang", currentLang);
+        label.textContent = currentLang.toUpperCase();
+        applyLanguage();
+    });
+
+    applyLanguage();
+}
+
+// ─── Update Checker ───
+function initUpdateChecker() {
+    const btn = $("#update-btn");
+    btn.addEventListener("click", async () => {
+        showToast(t("update_checking"), "info");
+        try {
+            const res = await fetch("https://api.github.com/repos/ayubjon1/helix-studio/releases/latest");
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            const latest = data.tag_name;
+            const current = "v1.0.0";
+            if (latest && latest !== current) {
+                showToast(`${t("update_available")} ${latest}`, "success");
+            } else {
+                showToast(t("update_latest"), "success");
+            }
+        } catch {
+            // Fallback: check commits
+            try {
+                const res = await fetch("https://api.github.com/repos/ayubjon1/helix-studio/commits/main");
+                if (res.ok) {
+                    showToast(t("update_latest"), "info");
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast(t("update_error"), "error");
+            }
+        }
+    });
 }
 
 // ─── Theme Toggle ───
@@ -281,7 +331,7 @@ function initFileUpload() {
     // Transcribe
     $("#btn-transcribe").addEventListener("click", async () => {
         const file = input.files[0];
-        if (!file) { showToast("Сначала загрузите аудио", "error"); return; }
+        if (!file) { showToast(t("toast_upload_audio"), "error"); return; }
         const btn = $("#btn-transcribe");
         btn.disabled = true;
         const fd = new FormData();
@@ -290,7 +340,7 @@ function initFileUpload() {
             const res = await fetch("/api/transcribe", { method: "POST", body: fd });
             if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || "Ошибка"); }
             const data = await res.json();
-            if (data.text) { $("#ref-text").value = data.text; showToast("Транскрипция готова", "success"); }
+            if (data.text) { $("#ref-text").value = data.text; showToast(t("toast_transcription_done"), "success"); }
         } catch (err) { showToast(err.message, "error"); }
         finally { btn.disabled = false; }
     });
@@ -735,7 +785,7 @@ function renderVoicePresets(presets) {
             await fetch(`/api/presets/${id}`, { method: "DELETE" });
             if ($("#selected-preset-id").value === id) $("#selected-preset-id").value = "";
             loadVoicePresets();
-            showToast("Пресет удалён", "success");
+            showToast(t("toast_preset_deleted"), "success");
         });
     });
 }
@@ -743,7 +793,7 @@ function renderVoicePresets(presets) {
 
 async function saveVoicePreset() {
     const file = $("#ref-audio-input").files[0];
-    if (!file) { showToast("Сначала загрузите аудиофайл", "error"); return; }
+    if (!file) { showToast(t("toast_upload_audio"), "error"); return; }
     const name = $("#preset-name-input").value.trim() || file.name.replace(/\.[^.]+$/, "");
 
     const btn = $("#btn-save-preset");
@@ -1011,7 +1061,7 @@ async function generate() {
     if (btn.disabled) return;
 
     const text = $("#text-input").value.trim();
-    if (!text) { $("#text-input").focus(); showToast("Введите текст", "error"); return; }
+    if (!text) { $("#text-input").focus(); showToast(t("toast_enter_text"), "error"); return; }
 
     btn.disabled = true;
     btn.querySelector(".btn-generate-content").classList.add("hidden");
@@ -1109,7 +1159,7 @@ async function downloadFile(url, filename) {
         // Try pywebview native save dialog
         if (window.pywebview && window.pywebview.api) {
             const saved = await window.pywebview.api.save_file(url, filename);
-            if (saved) showToast("Файл сохранён", "success");
+            if (saved) showToast(t("toast_saved"), "success");
             return;
         }
         // Fallback for browser
@@ -1211,7 +1261,7 @@ async function clearHistory() {
     $("#output-empty").classList.remove("hidden");
     $("#output-player").classList.add("hidden");
     $("#output-error").classList.add("hidden");
-    showToast("История очищена", "success");
+    showToast(t("toast_history_cleared"), "success");
 }
 
 async function loadHistory() {
