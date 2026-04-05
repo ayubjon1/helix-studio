@@ -23,7 +23,7 @@ const I18N = {
         // Clone
         "Голосовые пресеты": "Голосовые пресеты",
         "Или загрузите новый голос": "Или загрузите новый голос",
-        "drop_text": "Перетащите аудио или ",
+        "drop_text": "Перетащите аудио или",
         "drop_link": "выберите файл",
         "drop_hint": "WAV, MP3, FLAC — 3-30 сек",
         "drop_or_record": "или запишите с микрофона",
@@ -161,7 +161,7 @@ const I18N = {
         "text_placeholder": "Enter text to convert to speech...",
         "Голосовые пресеты": "Voice Presets",
         "Или загрузите новый голос": "Or upload a new voice",
-        "drop_text": "Drop audio or ",
+        "drop_text": "Drop audio or",
         "drop_link": "choose file",
         "drop_hint": "WAV, MP3, FLAC — 3-30 sec",
         "drop_or_record": "or record from microphone",
