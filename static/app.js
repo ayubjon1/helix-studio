@@ -841,7 +841,7 @@ function initParams() {
     const durInput = $("#duration-input");
     durInput.addEventListener("input", () => {
         const v = parseFloat(durInput.value) || 0;
-        $("#duration-display").textContent = v > 0 ? v + "s" : "Авто";
+        $("#duration-display").textContent = v > 0 ? v + "s" : t("Авто");
     });
 }
 
@@ -971,8 +971,8 @@ function selectLanguage(id) {
         $("#lang-display").textContent = lang.name;
     } else {
         $("#lang-picker-flag").textContent = "🌐";
-        $("#lang-picker-text").textContent = "Авто-определение";
-        $("#lang-display").textContent = "Авто";
+        $("#lang-picker-text").textContent = t("Авто-определение");
+        $("#lang-display").textContent = t("Авто");
     }
     closeLangPicker();
 }

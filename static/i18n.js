@@ -103,6 +103,10 @@ const I18N = {
         "Сохраняю...": "Сохраняю...",
         "Мужчина 东北话": "Мужчина 东北话",
         "Записать": "Записать",
+        "output_or": "или",
+        "中文方言:": "中文方言:",
+        "preset_name_placeholder": "Имя пресета...",
+        "search_lang_placeholder": "Поиск языка...",
 
         // Update
         "update_checking": "Проверка обновлений...",
@@ -187,6 +191,10 @@ const I18N = {
         "Сохраняю...": "Saving...",
         "Мужчина 东北话": "Male 东北话",
         "Записать": "Record",
+        "output_or": "or",
+        "中文方言:": "Chinese Dialects:",
+        "preset_name_placeholder": "Preset name...",
+        "search_lang_placeholder": "Search language...",
         "update_checking": "Checking for updates...",
         "update_available": "Update available!",
         "update_latest": "You have the latest version",

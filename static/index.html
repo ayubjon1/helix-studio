@@ -167,7 +167,7 @@
                                     </div>
                                 </div>
                                 <div class="save-preset-row">
-                                    <input type="text" id="preset-name-input" class="preset-name-input" placeholder="Имя пресета...">
+                                    <input type="text" id="preset-name-input" class="preset-name-input" data-i18n-placeholder="preset_name_placeholder" placeholder="Имя пресета...">
                                     <button class="btn-save-preset" id="btn-save-preset" title="Сохранить как пресет">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                                         <span data-i18n="Сохранить голос">Сохранить голос</span>
@@ -179,7 +179,7 @@
                     <div class="input-group">
                         <label class="input-label" for="ref-text"><span data-i18n="Транскрипция">Транскрипция</span> <span class="label-hint" data-i18n="transcription_optional">(необязательно — авто через Whisper)</span></label>
                         <div class="transcribe-row">
-                            <textarea id="ref-text" class="text-area small" rows="2" placeholder="Текст, произнесённый в аудио..."></textarea>
+                            <textarea id="ref-text" class="text-area small" rows="2" data-i18n-placeholder="ref_text_placeholder" placeholder="Текст, произнесённый в аудио..."></textarea>
                             <button class="btn-transcribe" id="btn-transcribe" title="Автоматическая транскрипция" aria-label="Транскрибировать">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
                             </button>
@@ -226,7 +226,7 @@
                                 <button class="preset-chip" data-tag="korean accent"><span lang="en">korean</span></button>
                             </div>
                             <div class="tag-group">
-                                <span class="tag-group-label" lang="zh">中文方言:</span>
+                                <span class="tag-group-label" data-i18n="中文方言:">中文方言:</span>
                                 <button class="preset-chip" data-tag="东北话">东北话</button>
                                 <button class="preset-chip" data-tag="四川话">四川话</button>
                                 <button class="preset-chip" data-tag="河南话">河南话</button>
@@ -268,7 +268,7 @@
                                 </button>
                                 <div class="lang-dropdown hidden" id="lang-dropdown">
                                     <div class="lang-search-wrap">
-                                        <input type="text" class="lang-search" id="lang-search" placeholder="Поиск языка..." autocomplete="off">
+                                        <input type="text" class="lang-search" id="lang-search" data-i18n-placeholder="search_lang_placeholder" placeholder="Поиск языка..." autocomplete="off">
                                     </div>
                                     <div class="lang-list" id="lang-list"></div>
                                 </div>
@@ -349,7 +349,7 @@
                             <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
                         </div>
                         <p data-i18n="output_empty">Введите текст и нажмите «Генерировать»</p>
-                        <p class="output-empty-hint">или <kbd>Ctrl</kbd>+<kbd>Enter</kbd></p>
+                        <p class="output-empty-hint"><span data-i18n="output_or">или</span> <kbd>Ctrl</kbd>+<kbd>Enter</kbd></p>
                     </div>
 
                     <div class="output-error hidden" id="output-error">
