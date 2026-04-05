@@ -454,16 +454,17 @@ async def transcribe_audio(audio: UploadFile = File(...)):
 
 
 # ─── Microphone Recording ───
-recording_state = {"active": False, "data": [], "sr": 24000}
+recording_state = {"active": False, "data": [], "sr": 24000, "stream": None}
+import threading as _threading
+_rec_lock = _threading.Lock()
 
 
 @app.post("/api/mic/start")
 async def mic_start():
     import sounddevice as sd
-    import numpy as np
 
     if recording_state["active"]:
-        raise HTTPException(400, "Запись уже идёт")
+        raise HTTPException(400, "Recording already active")
 
     sr = 24000
     recording_state["active"] = True
@@ -472,7 +473,8 @@ async def mic_start():
 
     def callback(indata, frames, time_info, status):
         if recording_state["active"]:
-            recording_state["data"].append(indata.copy())
+            with _rec_lock:
+                recording_state["data"].append(indata.copy())
 
     recording_state["stream"] = sd.InputStream(
         samplerate=sr, channels=1, dtype="float32", callback=callback
@@ -486,11 +488,13 @@ async def mic_stop():
     import numpy as np
 
     if not recording_state["active"]:
-        raise HTTPException(400, "Запись не идёт")
+        raise HTTPException(400, "Recording not active")
 
     recording_state["active"] = False
-    recording_state["stream"].stop()
-    recording_state["stream"].close()
+    if recording_state["stream"]:
+        recording_state["stream"].stop()
+        recording_state["stream"].close()
+        recording_state["stream"] = None
 
     if not recording_state["data"]:
         raise HTTPException(400, "Пустая запись")

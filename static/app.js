@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initPresets();
     initShortcuts();
     initHistory();
-    initVoicePresets();
     loadLanguages();
     loadHistory();
     loadVoicePresets();
@@ -233,7 +232,7 @@ function initMicRecorder() {
                 initTrimmer(file);
 
                 const dur = ((Date.now() - startTime) / 1000).toFixed(1);
-                showToast(`Записано ${dur}с`, "success");
+                showToast(`${t("toast_recorded")} ${dur}s`, "success");
             } catch (err) {
                 showToast(err.message, "error");
             } finally {
@@ -302,7 +301,7 @@ function initFileUpload() {
     input.addEventListener("change", () => { if (input.files.length) handleFile(input.files[0]); });
 
     function handleFile(file) {
-        if (!file.type.startsWith("audio/")) { showToast("Выберите аудиофайл", "error"); return; }
+        if (!file.type.startsWith("audio/")) { showToast(t("toast_select_audio"), "error"); return; }
         input.files = createFileList(file);
         $("#file-name").textContent = file.name;
         // Deselect any preset
@@ -363,6 +362,7 @@ let trimEnd = 1;      // ratio 0-1
 let trimmerPeaks = null;
 let trimmerPreviewAudio = null;
 let draggingHandle = null;
+let trimmerDragAbort = null; // AbortController for drag listeners
 
 function initTrimmer(file) {
     const canvas = $("#trimmer-canvas");
@@ -581,10 +581,15 @@ function initTrimmerDrag() {
 
     function onUp() { draggingHandle = null; }
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-    document.addEventListener("touchmove", onMove);
-    document.addEventListener("touchend", onUp);
+    // Remove old listeners if any
+    if (trimmerDragAbort) trimmerDragAbort.abort();
+    trimmerDragAbort = new AbortController();
+    const sig = { signal: trimmerDragAbort.signal };
+
+    document.addEventListener("mousemove", onMove, sig);
+    document.addEventListener("mouseup", onUp, sig);
+    document.addEventListener("touchmove", onMove, sig);
+    document.addEventListener("touchend", onUp, sig);
 
     // Click on waveform to set nearest handle
     canvas.addEventListener("click", (e) => {
@@ -686,7 +691,7 @@ function writeString(view, offset, string) {
 }
 
 // ─── Voice Presets ───
-function initVoicePresets() {}
+// Voice presets are loaded via loadVoicePresets()
 
 async function loadVoicePresets() {
     try {
@@ -780,7 +785,7 @@ function renderVoicePresets(presets) {
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
             const id = btn.dataset.id;
-            if (!confirm("Удалить этот голосовой пресет?")) return;
+            if (!confirm(t("confirm_delete_preset"))) return;
             stopPresetAudio();
             await fetch(`/api/presets/${id}`, { method: "DELETE" });
             if ($("#selected-preset-id").value === id) $("#selected-preset-id").value = "";
@@ -1105,7 +1110,7 @@ async function generate() {
         const data = await res.json();
         showPlayer(data);
         loadHistory();
-        showToast(`Готово за ${data.elapsed}с`, "success");
+        showToast(`${t("toast_done")} ${data.elapsed}s`, "success");
     } catch (err) {
         showError(err.message);
     } finally {
@@ -1164,7 +1169,7 @@ async function downloadFile(url, filename) {
         }
         // Fallback for browser
         const res = await fetch(url);
-        if (!res.ok) throw new Error("Ошибка скачивания");
+        if (!res.ok) throw new Error(t("download_error"));
         const blob = await res.blob();
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
@@ -1254,7 +1259,7 @@ function initHistory() {
 }
 
 async function clearHistory() {
-    if (!confirm("Очистить всю историю?")) return;
+    if (!confirm(t("confirm_clear_history"))) return;
     audioEl.pause(); audioEl.src = ""; currentAudioUrl = null;
     await fetch("/api/history/clear", { method: "POST" });
     loadHistory();
@@ -1276,7 +1281,7 @@ function renderHistory(history) {
     const countEl = $("#history-count");
     if (!history.length) { list.innerHTML = '<div class="history-empty">Пока пусто</div>'; countEl.textContent = ""; return; }
     countEl.textContent = `(${history.length})`;
-    const modeLabels = { basic: "ТТС", clone: "Клон", design: "Дизайн" };
+    const modeLabels = { basic: t("ТТС"), clone: t("Клон"), design: t("Дизайн") };
     list.innerHTML = history.map(item => `
         <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}">
             <div class="history-play"><svg viewBox="0 0 24 24" fill="currentColor" width="12"><polygon points="6,4 18,12 6,20"/></svg></div>

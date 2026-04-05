@@ -404,9 +404,28 @@
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
     <script>
-    // Fix pywebview macOS focus issue
+    // Detect non-macOS and remove traffic light padding
+    if (navigator.platform && !navigator.platform.includes('Mac')) {
+        document.querySelector('.header').style.padding = '1rem 1.5rem';
+    }
+    // Fix pywebview focus
     window.addEventListener('load', () => { window.focus(); document.body.focus(); });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) window.focus(); });
+
+    // Native app behavior: disable browser context menu (except in text inputs)
+    document.addEventListener('contextmenu', (e) => {
+        if (!e.target.closest('textarea, input[type="text"]')) e.preventDefault();
+    });
+
+    // Disable browser zoom
+    document.addEventListener('wheel', (e) => { if (e.ctrlKey || e.metaKey) e.preventDefault(); }, { passive: false });
+
+    // Disable browser keyboard shortcuts (Cmd+R reload, Cmd+L address bar, etc)
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && ['r','l','p','f','g','u'].includes(e.key.toLowerCase())) {
+            if (e.key.toLowerCase() !== 'f') e.preventDefault(); // allow Cmd+F for find
+        }
+    });
     </script>
 </body>
 </html>

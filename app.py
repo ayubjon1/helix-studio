@@ -165,12 +165,20 @@ SPLASH_HTML = """
 
 def kill_port():
     """Kill any process using our port."""
-    import subprocess
+    import subprocess, signal
     try:
-        result = subprocess.run(["lsof", "-ti", f":{PORT}"], capture_output=True, text=True)
-        for pid in result.stdout.strip().split():
-            if pid:
-                subprocess.run(["kill", "-9", pid], capture_output=True)
+        if platform.system() == "Windows":
+            result = subprocess.run(["netstat", "-ano"], capture_output=True, text=True)
+            for line in result.stdout.split("\n"):
+                if f":{PORT}" in line and "LISTENING" in line:
+                    pid = line.strip().split()[-1]
+                    if pid.isdigit():
+                        subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True)
+        else:
+            result = subprocess.run(["lsof", "-ti", f":{PORT}"], capture_output=True, text=True)
+            for pid in result.stdout.strip().split():
+                if pid:
+                    os.kill(int(pid), signal.SIGKILL)
     except Exception:
         pass
 
@@ -237,17 +245,79 @@ if __name__ == "__main__":
 
     api = Api()
 
+    # Load saved window state
+    state_file = os.path.join(app_dir, ".window-state.json")
+    state = None
+    try:
+        with open(state_file) as f:
+            import json as _json
+            state = _json.load(f)
+    except Exception:
+        pass
+
     # Create window with splash screen
     window = webview.create_window(
         title="Helix Studio",
         html=splash,
-        width=1300,
-        height=850,
+        width=state["width"] if state else 1300,
+        height=state["height"] if state else 850,
+        x=state.get("x") if state else None,
+        y=state.get("y") if state else None,
         min_size=(900, 600),
-        text_select=True,
+        text_select=False,
         on_top=True,
         js_api=api,
+        frameless=False,
+        easy_drag=False,
+        background_color='#0e0e10',
+        zoomable=False,
     )
+
+    # Native macOS window customization
+    def customize_native(window_ref):
+        if platform.system() != "Darwin":
+            return
+        try:
+            import AppKit
+            ns_window = window_ref.native
+
+            # Transparent titlebar — content extends into it
+            mask = ns_window.styleMask()
+            mask |= (1 << 15)  # NSFullSizeContentViewWindowMask
+            ns_window.setStyleMask_(mask)
+            ns_window.setTitlebarAppearsTransparent_(True)
+            ns_window.setTitleVisibility_(1)  # NSWindowTitleHidden
+
+            # Force dark appearance
+            dark = AppKit.NSAppearance.appearanceNamed_('NSAppearanceNameDarkAqua')
+            if dark:
+                ns_window.setAppearance_(dark)
+
+            # Disable bounce scrolling
+            try:
+                wk = ns_window.contentView()
+                for subview in wk.subviews():
+                    if hasattr(subview, 'enclosingScrollView'):
+                        sv = subview.enclosingScrollView()
+                        if sv:
+                            sv.setBounces_(False)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    window.events.before_show += customize_native
+
+    # Save window state on close
+    def save_state():
+        try:
+            import json as _json
+            with open(state_file, "w") as f:
+                _json.dump({"x": window.x, "y": window.y, "width": window.width, "height": window.height}, f)
+        except Exception:
+            pass
+
+    window.events.closing += save_state
 
     boot_lock = {"done": False}
 
