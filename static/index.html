@@ -17,11 +17,11 @@
     <header class="header">
         <div class="logo">
             <div class="logo-icon">
-                <img src="/icon.png" alt="Helix Studio" width="36" height="36" style="border-radius: 8px;">
+                <img src="/icon.png" alt="Helix Studio">
             </div>
             <div class="logo-text">
                 <span class="logo-title">Helix</span>
-                <span class="logo-sub">Studio</span>
+                <span class="logo-sub">studio</span>
             </div>
         </div>
         <div class="header-right">
@@ -190,8 +190,9 @@
                 <!-- Design Mode -->
                 <div id="design-section" class="mode-section hidden" role="tabpanel">
                     <div class="input-group">
-                        <label class="input-label" for="instruct-input" data-i18n="Описание голоса">Описание голоса</label>
-                        <textarea id="instruct-input" class="text-area" rows="2" placeholder="female, young adult, british accent, low pitch..."></textarea>
+                        <label class="input-label" data-i18n="Описание голоса">Описание голоса</label>
+                        <div class="instruct-display" id="instruct-display" data-i18n-placeholder="instruct_empty">Выберите характеристики ниже</div>
+                        <input type="hidden" id="instruct-input" value="">
                         <div class="design-tags">
                             <div class="tag-group">
                                 <span class="tag-group-label" data-i18n="Пол:">Пол:</span>
@@ -404,10 +405,6 @@
     <script src="/i18n.js"></script>
     <script src="/app.js"></script>
     <script>
-    // Detect non-macOS and remove traffic light padding
-    if (navigator.platform && !navigator.platform.includes('Mac')) {
-        document.querySelector('.header').style.padding = '1rem 1.5rem';
-    }
     // Fix pywebview focus
     window.addEventListener('load', () => { window.focus(); document.body.focus(); });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) window.focus(); });

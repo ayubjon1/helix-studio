@@ -274,19 +274,12 @@ if __name__ == "__main__":
     )
 
     # Native macOS window customization
-    def customize_native(window_ref):
+    def customize_native():
         if platform.system() != "Darwin":
             return
         try:
             import AppKit
-            ns_window = window_ref.native
-
-            # Transparent titlebar — content extends into it
-            mask = ns_window.styleMask()
-            mask |= (1 << 15)  # NSFullSizeContentViewWindowMask
-            ns_window.setStyleMask_(mask)
-            ns_window.setTitlebarAppearsTransparent_(True)
-            ns_window.setTitleVisibility_(1)  # NSWindowTitleHidden
+            ns_window = window.native
 
             # Force dark appearance
             dark = AppKit.NSAppearance.appearanceNamed_('NSAppearanceNameDarkAqua')

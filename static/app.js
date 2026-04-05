@@ -874,9 +874,11 @@ function initAdvancedParams() {
 
 // ─── Presets & Tags ───
 function initPresets() {
+    // Full presets — replace all tags
     $$(".preset-chip[data-preset]").forEach((chip) => {
         chip.addEventListener("click", () => { $("#instruct-input").value = chip.dataset.preset; syncTagHighlights(); });
     });
+    // Individual tags — toggle
     $$(".preset-chip[data-tag]").forEach((chip) => {
         chip.addEventListener("click", () => {
             const tag = chip.dataset.tag;
@@ -888,7 +890,6 @@ function initPresets() {
             syncTagHighlights();
         });
     });
-    $("#instruct-input").addEventListener("input", syncTagHighlights);
 }
 
 function parseTags(value) { return value.split(",").map(s => s.trim()).filter(Boolean); }
@@ -896,6 +897,25 @@ function parseTags(value) { return value.split(",").map(s => s.trim()).filter(Bo
 function syncTagHighlights() {
     const tags = parseTags($("#instruct-input").value);
     $$(".preset-chip[data-tag]").forEach(c => c.classList.toggle("active-tag", tags.includes(c.dataset.tag)));
+    updateInstructDisplay();
+}
+
+function updateInstructDisplay() {
+    const display = $("#instruct-display");
+    if (!display) return;
+    const tags = parseTags($("#instruct-input").value);
+    if (tags.length === 0) {
+        display.textContent = t("instruct_empty");
+        display.classList.remove("has-value");
+    } else {
+        // Show translated tag names
+        const translated = tags.map(tag => {
+            const chip = $(`.preset-chip[data-tag="${tag}"] span[data-i18n]`);
+            return chip ? chip.textContent : tag;
+        });
+        display.textContent = translated.join(", ");
+        display.classList.add("has-value");
+    }
 }
 
 // ─── Languages ───

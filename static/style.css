@@ -139,7 +139,7 @@ button, [role="button"], label, select, input[type="range"],
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 28px 1.5rem 0.75rem 80px; /* top: titlebar, left: traffic lights */
+    padding: 0.75rem 1.5rem;
     border-bottom: 1px solid var(--border);
     background: var(--bg-surface);
     backdrop-filter: blur(20px);
@@ -149,34 +149,40 @@ button, [role="button"], label, select, input[type="range"],
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .logo-icon {
     color: var(--amber);
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
+}
+
+.logo-icon img {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+}
+
+.logo-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
 }
 
 .logo-title {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.25rem;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
 }
 
 .logo-sub {
     font-family: var(--font-mono);
-    font-size: 0.62rem;
-    color: var(--amber);
+    font-size: 0.55rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    margin-left: 0.5rem;
-    padding: 2px 7px;
-    border: 1px solid var(--amber-dim);
-    border-radius: 4px;
-    vertical-align: middle;
-    background: var(--amber-glow);
+    letter-spacing: 0.12em;
 }
 
 .header-right {
@@ -404,6 +410,11 @@ kbd {
     display: flex;
     gap: 0;
     padding: 1rem 1.25rem 0;
+    background: rgba(255,255,255,0.02);
+    border-radius: var(--radius-md);
+    margin: 1rem 1.25rem 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .mode-btn {
@@ -414,7 +425,8 @@ kbd {
     gap: 0.4rem;
     padding: 0.75rem 0.5rem;
     background: transparent;
-    border: 1px solid var(--border);
+    border: none;
+    border-right: 1px solid rgba(255,255,255,0.04);
     color: var(--text-muted);
     font-family: var(--font-body);
     font-size: 0.75rem;
@@ -424,9 +436,7 @@ kbd {
     min-height: 56px;
 }
 
-.mode-btn:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
-.mode-btn:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
-.mode-btn:not(:first-child) { border-left: none; }
+.mode-btn:last-child { border-right: none; }
 
 .mode-btn svg {
     width: 20px;
@@ -437,18 +447,18 @@ kbd {
 
 .mode-btn:hover {
     color: var(--text-secondary);
-    background: var(--bg-elevated);
+    background: var(--glass);
 }
 
 .mode-btn:hover svg { opacity: 0.7; }
 
 .mode-btn.active {
     color: var(--amber);
-    background: var(--amber-glow);
-    border-color: var(--amber-dim);
+    background: var(--amber-glow-strong);
+    border-right: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 0 16px var(--amber-glow);
 }
 
-.mode-btn.active + .mode-btn { border-left-color: var(--amber-dim); }
 .mode-btn.active svg { opacity: 1; }
 
 /* ─── Input Groups ─── */
@@ -479,7 +489,7 @@ kbd {
     width: 100%;
     padding: 0.85rem 1rem;
     background: var(--bg-deep);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     font-family: var(--font-body);
@@ -994,6 +1004,22 @@ kbd {
     border-color: var(--amber-dim);
 }
 .btn-transcribe:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── Instruct Display ─── */
+.instruct-display {
+    padding: 0.6rem 0.85rem;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    min-height: 38px;
+    line-height: 1.5;
+}
+.instruct-display.has-value {
+    color: var(--amber);
+}
 
 /* ─── Design Tags & Presets ─── */
 .design-tags {
