@@ -1227,11 +1227,8 @@ function renderHistory(history) {
     if (!history.length) { list.innerHTML = '<div class="history-empty">Пока пусто</div>'; countEl.textContent = ""; return; }
     countEl.textContent = `(${history.length})`;
     const modeLabels = { basic: "ТТС", clone: "Клон", design: "Дизайн" };
-    // Sort: favorites first
-    const sorted = [...history].sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
-
-    list.innerHTML = sorted.map(item => `
-        <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}" data-id="${escapeHtml(item.id)}">
+    list.innerHTML = history.map(item => `
+        <div class="history-item" data-url="/audio/${escapeHtml(item.filename)}" data-duration="${item.duration || 0}">
             <div class="history-play"><svg viewBox="0 0 24 24" fill="currentColor" width="12"><polygon points="6,4 18,12 6,20"/></svg></div>
             <div class="history-info">
                 <div class="history-text">${escapeHtml(item.text)}</div>
@@ -1241,29 +1238,13 @@ function renderHistory(history) {
                     <span>${(item.timestamp || "").split(" ")[1] || ""}</span>
                 </div>
             </div>
-            <button class="history-fav${item.favorite ? " is-fav" : ""}" data-id="${escapeHtml(item.id)}" title="Избранное">${item.favorite ? "★" : "☆"}</button>
         </div>
     `).join("");
 
     list.querySelectorAll(".history-item").forEach(el => {
-        el.addEventListener("click", (e) => {
-            if (e.target.closest(".history-fav")) return;
+        el.addEventListener("click", () => {
             showPlayer({ audio_url: el.dataset.url, duration: parseFloat(el.dataset.duration) || 0, elapsed: "" });
             audioEl.addEventListener("loadedmetadata", () => { $("#player-duration").textContent = formatTime(audioEl.duration); }, { once: true });
-        });
-    });
-
-    // Favorite toggle
-    list.querySelectorAll(".history-fav").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
-            e.stopPropagation();
-            const id = btn.dataset.id;
-            const res = await fetch(`/api/history/${id}/favorite`, { method: "POST" });
-            if (res.ok) {
-                const data = await res.json();
-                btn.textContent = data.favorite ? "★" : "☆";
-                btn.classList.toggle("is-fav", data.favorite);
-            }
         });
     });
 }
